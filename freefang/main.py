@@ -26,24 +26,8 @@ def create_game(playercap):
 		
 		game.players.append(p)
 		print(f"{p.name} has joined the game")
-		threading.Thread(target=player_connection, args=(game, p)).start()
 	game.gameloop()
 
-def player_connection(game, player):
-    while True:
-        try:
-            cmd = player.connection.recv(1024).decode()
-            if not cmd:
-                break  # Empty message means the player disconnected
-
-            # Handle player commands as needed
-
-        except ConnectionResetError: # Unexpected disconnection
-            break
-
-    game.players.remove(player)
-    print(f"{player.name} has left the game")
-		
 def main():
 	print("Starting FreeFang server.")
 	create_game(4)
