@@ -27,7 +27,7 @@ class WWgame:
 		
 		# Randomly give each role to the number of players its supposed to be on, 
 		for i, x in self.roles.items(): 
-			for y in range(x): 
+			for _ in range(x): 
 				index = random.randint(0, len(noroles) - 1)
 				noroles[index].role = i # Give that role to a random player and remove him from that list
 				noroles[index].connection.send(f"You have gotten the role {i.__name__.encode()}\n".encode())# To replace with json
@@ -95,7 +95,7 @@ class WWgame:
 				self.inputs.remove(i)
 				self.outputs.remove(i)
 				for x in self.players:
-					if player.connection == i:
+					if x.connection == i:
 						print(f"{x.name} has left the game")
 						self.players.remove(x)
 				i.close()
