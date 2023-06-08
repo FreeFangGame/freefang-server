@@ -9,6 +9,10 @@ class Player:
 		self.connection = 0
 		self.voted_by = 0 # Number of people who voted for this player
 		self.voted = False
+		self.time = 0 # 0 = Night, 1 = Day
+	def iswerewolf(self):
+		return issubclass(self.role, Werewolf)
+			
 
 
 class WWgame:
@@ -20,7 +24,11 @@ class WWgame:
 		self.socket = 0
 		self.inputs = []
 		self.outputs = []
-		self.roles = {Villager: 2, Werewolf: 2} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
+		self.msgqueues = {}
+		self.nightroles = [Werewolf] # Roles that should be woken up at night, in order
+		self.up = 0 # The current role which is woken up, 0 if day.
+
+		self.roles = {Villager: 3, Werewolf: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
 	def distribute_roles(self):
 		noroles = [i for i in self.players] # Get all the players and keep track of those with no roles
 		print("Distributing roles to players")
@@ -33,6 +41,11 @@ class WWgame:
 				noroles[index].connection.send(f"You have gotten the role {i.__name__.encode()}\n".encode())# To replace with json
 				print(f"Player {noroles[index].name} got role {i.__name__}") 
 
+				if noroles[index].iswerewolf():
+					self.werewolves.append(noroles[index])
+				else:
+					self.villagers.append(noroles[index])
+				
 				noroles.pop(index)
 			
 	def update_player_count(self):
@@ -50,7 +63,7 @@ class WWgame:
 		for player in self.players:
 			try:
 				player.connection.send(b"")  # Sending empty message to check connection status
-			except ConnectionResetError:
+			except:
 				disconnected_players.append(player)
 
 		for player in disconnected_players:
@@ -59,34 +72,37 @@ class WWgame:
 		#self.update_player_count()
 
 		
-	def gameloop(self):
-		# Start game and distribute roles
-		print("Game starting")
-		self.handle_disconnections()
+	def isnight(self):
+		return self.time == 0
+	def queueall(self, string): # Send a message to all players
+		for i in self.outputs:
+			if self.msgqueues.get(i):
+				self.msgqueues[i] += string
+			else:
+				self.msgqueues[i] = string
+			
+	def eventloop(self): 
+		while True: # This loop will eventually be broken, can be while true.
+			self.handle_disconnections()
 
-		self.distribute_roles()
-
-		# Setup I/O channels for select as well as message queue for each player
-		self.inputs = [self.socket] + [i.connection for i in self.players]
-		self.outputs = [i.connection for i in self.players]
-		msgqueues = {}
-
-		self.socket.setblocking(0)
-		
-		
-		while True: # Game should go on as long as there are villagers and werewolves
-			#P.S, we should eventually populate self.werewolves and self.villagers so this doesnt have to be an infinite loop
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 			for i in read:
 				cmd = i.recv(4096).decode()
-				# Handle command 
+				# Handle command
+				if cmd.split()[0] == "Vote": # Temporary until json packets implemented
+					if self.up == Werewolf:
+						vt = WerewolfVote()
+						vt.target = cmd.split()[1]
+						
+					
+					
 				if not cmd:
 					continue  # Empty message, keep going.
 
 			for i in write:
-				if msgqueues.get(i): # If a message is pending for a player send it to them
-					i.sendall(msgqueues[i].encode())
-					del msgqueues[i] # No more message needed to send
+				if self.msgqueues.get(i): # If a message is pending for a player send it to them
+					i.sendall(self.msgqueues[i].encode())
+					del self.msgqueues[i] # No more message needed to send
 					
 				else:
 					continue
@@ -99,6 +115,34 @@ class WWgame:
 						print(f"{x.name} has left the game")
 						self.players.remove(x)
 				i.close()
-			self.handle_disconnections()
 	
+		
+	def gameloop(self):
+		# Start game and distribute roles
+		print("Game starting")
+		self.handle_disconnections()
+
+		self.distribute_roles()
+		print(self.werewolves)
+
+
+		# Setup I/O channels for select as well as message queue for each player
+		self.inputs = [self.socket] + [i.connection for i in self.players]
+		self.outputs = [i.connection for i in self.players]
+
+		self.socket.setblocking(0)
+		while len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: 
+			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
+			self.queueall("Night")
+			for i in self.nightroles:
+				self.queueall(f"{i.__name__} wake up")
+				self.up = i
+				self.eventloop()
 				
+			
+			self.up = 0
+			self.time = 1
+			self.queueall("Day")
+			self.eventloop()
+
+
