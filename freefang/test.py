@@ -16,4 +16,4 @@ while True:
 #	print(s.recv(4096).decode())
 	s.send((str(len(json)) + "\r").encode())
 	s.send(json.encode())
-	time.sleep(0.01)
+	s.recv(1024)

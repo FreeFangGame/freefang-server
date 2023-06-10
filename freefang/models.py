@@ -8,6 +8,7 @@ def test_event(headers, game):
 	print("WE'RE COOKING!!")
 	print(headers.target)
 	print(headers.sender.name)
+	return 0
 class Player:
 	def __init__(self):
 		self.role = None
