@@ -4,7 +4,7 @@ from roles import *
 import sys
 
 
-def test_event(headers, game):
+def test_event(headers, game, connection):
 	print("WE'RE COOKING!!")
 	print(headers.target)
 	print(headers.sender.name)
@@ -76,6 +76,7 @@ class WWgame:
 		for player in self.players:
 			try:
 				player.connection.send(b"")  # Sending empty message to check connection status
+
 			except:
 				disconnected_players.append(player)
 
@@ -93,6 +94,12 @@ class WWgame:
 				self.msgqueues[i] += string
 			else:
 				self.msgqueues[i] = string
+	def queuewerewolves(self, string): # Send a message to all wolves
+		for i in self.werewolves:				
+			if self.msgqueues.get(i.connection):
+				self.msgqueues[i.connection] += string
+			else:
+				self.msgqueues[i.connection] = string
 	def readlength(self, con):
 		buf = ""
 		for i in range(12):
@@ -113,6 +120,10 @@ class WWgame:
 		if not packet:
 			return None
 		return packet
+	def send_packet(self, packet, con):
+		head = str(len(packet)) + "\r"
+		con.sendall((head + packet).encode())
+		
 	def eventloop(self): 
 		while True: # This loop will eventually be broken, can be while true.
 			self.handle_disconnections()
@@ -128,7 +139,7 @@ class WWgame:
 					print("object made")
 					setattr(pckt.headers, "sender", self.connections[i])
 					print(f"Action {pckt.action}")
-					if not self.action_to_function[pckt.action](pckt.headers, self): # Returns 1 if failure
+					if not self.action_to_function[pckt.action](pckt.headers, self, i): # Returns 1 if failure
 						i.sendall(b"OK")
 					else:
 						i.sendall(b"BAD")# Go to except

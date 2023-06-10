@@ -1,3 +1,5 @@
+import events, json
+
 class Role:
 	def __init__(self):
 		self.number = 2 # Number of people with this role
@@ -15,13 +17,17 @@ class Werewolf(Role):
 		pass
 		
 	@staticmethod
-	def vote(headers, game):
+	def vote(headers, game, connection):
 
 		if game.up == Werewolf and headers.sender.role == Werewolf and headers.sender.voted == False:
 				
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)
 			headers.sender.voted = True
+			event = events.Werewolfvoteevent(headers.target, headers.sender)
+			pckt = json.dumps(event)
+			game.send_packet(pckt, connection)
+
 			if len(game.votes) == len(game.werewolves): # All the werewolves voted
 				unanimity = all(i.target == game.votes[0].target for i in game.votes)
 				if not unanimity:
