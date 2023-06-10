@@ -13,6 +13,29 @@ class Werewolf(Role):
 	def __init__(self):
 		super(Werewolf, self).__init__()
 		pass
+		
+	@staticmethod
+	def vote(headers, game):
+
+		if game.up == Werewolf and headers.sender.role == Werewolf and headers.sender.voted == False:
+				
+			vt = WerewolfVote(headers.target, headers.sender)
+			game.votes.append(vt)
+			headers.sender.voted = True
+			if len(game.votes) == len(game.werewolves): # All the werewolves voted
+				unanimity = all(i.target == game.votes[0].target for i in game.votes)
+				if not unanimity:
+					# Wolves fucked up, no kill for them
+					pass
+				else:
+					pass
+					
+				 
+			return 0
+		else:
+			return 1
+		
+		
 
 class Vote:
     def __init__(self):
@@ -25,6 +48,6 @@ class CitizenVote(Vote):
         pass
 
 class WerewolfVote(Vote):
-    def __init__(self):
+    def __init__(self, target, sender):
         super(WerewolfVote, self).__init__()
         pass

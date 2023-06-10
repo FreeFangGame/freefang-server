@@ -19,7 +19,7 @@ def create_game(playercap):
 	s.listen(playercap)
 	while len(game.players) < playercap: #Temporary, for now wait until playercap reached
 		con, addr = s.accept()
-		cmd = con.recv(1024).decode()
+		#cmd = con.recv(1024).decode()
 		p = models.Player()
 		p.name = utils.randstring()
 		p.connection = con

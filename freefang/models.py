@@ -1,6 +1,13 @@
-import select, random
+import select, random, json
+from types import SimpleNamespace
 from roles import *
+import sys
 
+
+def test_event(headers, game):
+	print("WE'RE COOKING!!")
+	print(headers.target)
+	print(headers.sender.name)
 class Player:
 	def __init__(self):
 		self.role = None
@@ -27,6 +34,9 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [Werewolf] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "test_event": test_event}
+		self.votes = []
+		self.connections = {} # Dictionnary associating connections to players
 
 		self.roles = {Villager: 3, Werewolf: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
 	def distribute_roles(self):
@@ -57,6 +67,8 @@ class WWgame:
 		self.inputs.remove(player.connection)
 		self.outputs.remove(player.connection)
 		print(f"{player.name} disconnected")
+	def kill_player(self, player):
+		player.alive = False
 
 	def handle_disconnections(self):
 		disconnected_players = [] # Track multiple disconnections at a time
@@ -80,24 +92,53 @@ class WWgame:
 				self.msgqueues[i] += string
 			else:
 				self.msgqueues[i] = string
+	def readlength(self, con):
+		buf = ""
+		for i in range(12):
+			buff = con.recv(1).decode()
+			if buff == "\r":
+				break
+			else:
+				buf += buff
+		return int(buf)
 			
+	def read_packet(self, con):
+		length = self.readlength(con)
+		print(length)
+		if not length:
+			return None
+		packet = con.recv(length).decode()
+		print(packet + "\n\n")
+		if not packet:
+			return None
+		return packet
 	def eventloop(self): 
 		while True: # This loop will eventually be broken, can be while true.
 			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 			for i in read:
-				cmd = i.recv(4096).decode()
-				# Handle command
-				if cmd.split()[0] == "Vote": # Temporary until json packets implemented
-					if self.up == Werewolf:
-						vt = WerewolfVote()
-						vt.target = cmd.split()[1]
+				packet = self.read_packet(i)
+				if not packet:
+					continue
+
+				try:
+					pckt = json.loads(packet, object_hook=lambda d: SimpleNamespace(**d))
+					print("object made")
+					setattr(pckt.headers, "sender", self.connections[i])
+					print(f"Action {pckt.action}")
+					if not self.action_to_function[pckt.action](pckt.headers, self): # Returns 1 if failure
+						i.sendall(b"OK")
+					else:
+						i.sendall(b"BAD")# Go to except
+				except Exception as e:
+					print("Error")
+					print(e)
+					i.sendall(b"ERROR")
 						
 					
 					
-				if not cmd:
-					continue  # Empty message, keep going.
+
 
 			for i in write:
 				if self.msgqueues.get(i): # If a message is pending for a player send it to them
@@ -123,8 +164,9 @@ class WWgame:
 		self.handle_disconnections()
 
 		self.distribute_roles()
-		print(self.werewolves)
-
+		
+		for i in self.players:
+			self.connections[i.connection] = i
 
 		# Setup I/O channels for select as well as message queue for each player
 		self.inputs = [self.socket] + [i.connection for i in self.players]
