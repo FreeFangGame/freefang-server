@@ -1,7 +1,10 @@
 import select, random, json
 from types import SimpleNamespace
-from roles import *
 import sys
+try:
+    from freefang.roles import *
+except ImportError:
+    from roles import *
 
 
 def test_event(headers, game, connection):

@@ -1,4 +1,8 @@
-import events, json
+try:
+    from freefang.events import *
+except ImportError:
+    from events import *
+import json
 
 class Role:
 	def __init__(self):
