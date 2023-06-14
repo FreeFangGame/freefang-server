@@ -1,6 +1,14 @@
 import socket
 import time
-json = """
+join_json = """
+{
+        "action": "game_join",
+        "headers": {
+                "name": "Malefoy"
+        }
+}
+"""
+ww_json = """
 {
 	"action": "werewolf_vote",
 	"headers": {
@@ -9,9 +17,9 @@ json = """
 }
 """
 #json = str(len(json)) + "\r" + json
-print(json)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 s.connect(("127.0.0.1", 9999))
+s.send((str(len(join_json)) + "\r" + join_json).encode())
 while True:
 	i = s.recv(4096).decode()
 	if i:

@@ -2,6 +2,7 @@ import socket
 import json 
 import models
 import freefang_utils as utils
+import freefang_net as net
 import threading
 
 def create_game(playercap):
@@ -19,13 +20,21 @@ def create_game(playercap):
 	s.listen(playercap)
 	while len(game.players) < playercap: #Temporary, for now wait until playercap reached
 		con, addr = s.accept()
-		#cmd = con.recv(1024).decode()
-		p = models.Player()
-		p.name = utils.randstring()
-		p.connection = con
-		
-		game.players.append(p)
-		print(f"{p.name} has joined the game")
+		packet = net.read_packet(con)
+		if not packet: # If no packet is sent we bail out
+			con.close()
+			continue
+		packet = utils.json_to_object(packet)
+		if packet.action == "game_join":
+			p = models.Player()
+			p.name = packet.headers.name
+			p.connection = con
+			
+			game.players.append(p)
+			print(f"{p.name} has joined the game")
+		else:
+			continue 
+
 	game.gameloop()
 
 def main():

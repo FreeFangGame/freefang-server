@@ -1,10 +1,11 @@
 import select, random, json
-from types import SimpleNamespace
 import sys
 try:
-    from freefang.roles import *
+	from freefang.roles import *
+	import freefang.freefang_net as fn
 except ImportError:
-    from roles import *
+	from roles import *
+	import freefang_net as fn
 
 
 def test_event(headers, game, connection):
@@ -112,20 +113,6 @@ class WWgame:
 			else:
 				buf += buff
 		return int(buf)
-			
-	def read_packet(self, con):
-		length = self.readlength(con)
-		print(length)
-		if not length:
-			return None
-		packet = con.recv(length).decode()
-		print(packet + "\n\n")
-		if not packet:
-			return None
-		return packet
-	def send_packet(self, packet, con):
-		head = str(len(packet)) + "\r"
-		con.sendall((head + packet).encode())
 		
 	def eventloop(self): 
 		while True: # This loop will eventually be broken, can be while true.
@@ -133,12 +120,12 @@ class WWgame:
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 			for i in read:
-				packet = self.read_packet(i)
+				packet = fn.read_packet(i)
 				if not packet:
 					continue
 
 				try:
-					pckt = json.loads(packet, object_hook=lambda d: SimpleNamespace(**d))
+					pckt = json_to_object(packet)
 					print("object made")
 					setattr(pckt.headers, "sender", self.connections[i])
 					print(f"Action {pckt.action}")
