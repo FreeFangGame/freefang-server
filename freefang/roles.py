@@ -1,7 +1,10 @@
 try:
     from freefang.events import *
+    import freefang.freefang_net as fn
 except ImportError:
     from events import *
+    import freefang_net as fn
+  
 import json
 
 class Role:
@@ -30,7 +33,7 @@ class Werewolf(Role):
 			headers.sender.voted = True
 			event = events.Werewolfvoteevent(headers.target, headers.sender)
 			pckt = json.dumps(event)
-			game.send_packet(pckt, connection)
+			fn.send_packet(pckt, connection)
 
 			if len(game.votes) == len(game.werewolves): # All the werewolves voted
 				unanimity = all(i.target == game.votes[0].target for i in game.votes)
