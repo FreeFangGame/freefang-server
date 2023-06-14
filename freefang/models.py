@@ -3,9 +3,13 @@ import sys
 try:
 	from freefang.roles import *
 	import freefang.freefang_net as fn
+	import freefang.packets
+	import freefang.freefang_utils as utils
 except ImportError:
 	from roles import *
 	import freefang_net as fn
+	import packets
+	import freefang_utils as utils
 
 
 def test_event(headers, game, connection):
@@ -53,7 +57,7 @@ class WWgame:
 			for _ in range(x): 
 				index = random.randint(0, len(noroles) - 1)
 				noroles[index].role = i # Give that role to a random player and remove him from that list
-				noroles[index].connection.send(f"You have gotten the role {i.__name__.encode()}\n".encode())# To replace with json
+				noroles[index].connection.send(utils.obj_to_json(packets.Role_attributed(role=i.__name__)).encode())# To replace with json
 				print(f"Player {noroles[index].name} got role {i.__name__}") 
 
 				if noroles[index].iswerewolf():
@@ -177,16 +181,17 @@ class WWgame:
 		self.socket.setblocking(0)
 		while len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
-			self.queueall("Night")
+			self.queueall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
 			for i in self.nightroles:
-				self.queueall(f"{i.__name__} wake up")
+				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 				self.up = i
 				self.eventloop()
 				
 			
 			self.up = 0
 			self.time = 1
-			self.queueall("Day")
+			self.queueall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
+
 			self.eventloop()
 
 

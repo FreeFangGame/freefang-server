@@ -3,6 +3,7 @@ import json
 import models
 import freefang_utils as utils
 import freefang_net as net
+import packets
 import threading
 
 def create_game(playercap):
@@ -31,6 +32,7 @@ def create_game(playercap):
 			p.connection = con
 			
 			game.players.append(p)
+			con.send(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name)).encode()) # Send player a packet confirming success
 			print(f"{p.name} has joined the game")
 		else:
 			continue 
