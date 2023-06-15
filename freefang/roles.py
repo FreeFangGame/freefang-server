@@ -1,8 +1,11 @@
 try:
-    from freefang.events import *
     import freefang.freefang_net as fn
+    import freefang.packets as packets
+    import freefang.freefang_utils as utils
 except ImportError:
     import freefang_net as fn
+    import packets
+    import freefang_utils as utils
   
 import json
 
@@ -30,16 +33,17 @@ class Werewolf(Role):
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)
 			headers.sender.voted = True
-			#event = Werewolfvoteevent(headers.target, headers.sender)
-			#pckt = json.dumps(event)
-			#fn.send_packet(pckt, connection)
+			event = packets.Werewolf_vote(target=headers.target, sender=headers.sender.name) # Create a packet indicating a person was voted
+			pckt = utils.obj_to_json(event) # Serialize it to json
+			game.queuewerewolves(pckt) # Send it to all werewolves
 
 			if len(game.votes) == len(game.werewolves): # All the werewolves voted
-				unanimity = all(i.target == game.votes[0].target for i in game.votes)
-				if not unanimity:
+				unanimity = all(i.target == game.votes[0].target for i in game.votes) 
+				if not unanimity: # Check if werewolves voted unanimously
 					# Wolves fucked up, no kill for them
 					pass
 				else:
+					# Kill the player that was unanimously voted
 					kill = game.getplayerbyname(headers.target)
 					game.kill_player(kill)
 				return 2
