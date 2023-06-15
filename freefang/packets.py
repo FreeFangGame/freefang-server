@@ -33,3 +33,10 @@ class Werewolf_vote:
 			"sender": sender,
 			"target": target
 		}
+
+class Show_werewolves: # This packet is sent to all werewolves in the beginning of a game to know who other werewolves are
+	def __init__(self, werewolves):
+		self.action = "show_werewolves"
+		self.headers = {
+			"werewolves": werewolves,
+		}

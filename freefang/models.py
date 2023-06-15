@@ -108,6 +108,11 @@ class WWgame:
 	def sendall(self, string):
 		for i in self.players:
 			fn.send_packet(string,i.connection)
+			
+	def sendwerewolves(self, string):
+		for i in self.werewolves:
+			fn.send_packet(string,i.connection)
+			
 	def queuewerewolves(self, string): # Send a message to all wolves
 		for i in self.werewolves:				
 			if self.msgqueues.get(i.connection):
@@ -175,6 +180,11 @@ class WWgame:
 		
 		for i in self.players:
 			self.connections[i.connection] = i
+			
+		# Send all werewolves the list of werewolves in the game
+		werewolvenames = [i.name for i in self.werewolves]
+		self.sendwerewolves(utils.obj_to_json(packets.Show_werewolves(werewolves=werewolvenames)))
+		
 
 		# Setup I/O channels for select as well as message queue for each player
 		self.inputs = [self.socket] + [i.connection for i in self.players]
