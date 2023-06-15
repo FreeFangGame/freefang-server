@@ -77,6 +77,7 @@ class WWgame:
 		self.outputs.remove(player.connection)
 		print(f"{player.name} disconnected")
 	def kill_player(self, player):
+		print(player.name + " died")
 		player.alive = False
 
 	def handle_disconnections(self):
@@ -108,15 +109,8 @@ class WWgame:
 				self.msgqueues[i.connection] += string
 			else:
 				self.msgqueues[i.connection] = string
-	def readlength(self, con):
-		buf = ""
-		for i in range(12):
-			buff = con.recv(1).decode()
-			if buff == "\r":
-				break
-			else:
-				buf += buff
-		return int(buf)
+	def getplayerbyname(self, name):
+		return [i for i in self.players if i.name == name][0]
 		
 	def eventloop(self): 
 		while True: # This loop will eventually be broken, can be while true.
@@ -129,7 +123,7 @@ class WWgame:
 					continue
 
 				try:
-					pckt = json_to_object(packet)
+					pckt = utils.json_to_object(packet)
 					print("object made")
 					setattr(pckt.headers, "sender", self.connections[i])
 					print(f"Action {pckt.action}")

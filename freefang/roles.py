@@ -31,9 +31,9 @@ class Werewolf(Role):
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)
 			headers.sender.voted = True
-			event = events.Werewolfvoteevent(headers.target, headers.sender)
-			pckt = json.dumps(event)
-			fn.send_packet(pckt, connection)
+			#event = Werewolfvoteevent(headers.target, headers.sender)
+			#pckt = json.dumps(event)
+			#fn.send_packet(pckt, connection)
 
 			if len(game.votes) == len(game.werewolves): # All the werewolves voted
 				unanimity = all(i.target == game.votes[0].target for i in game.votes)
@@ -41,7 +41,9 @@ class Werewolf(Role):
 					# Wolves fucked up, no kill for them
 					pass
 				else:
-					pass
+					kill = game.getplayerbyname(headers.target)
+					game.kill_player(kill)
+				return 2
 					
 				 
 			return 0

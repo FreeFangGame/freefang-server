@@ -23,5 +23,5 @@ class Time_change:
 	def __init__(self, time):
 		self.action = "time_change"
 		self.headers = {
-			"time": time
+			"time": time,
 		}
