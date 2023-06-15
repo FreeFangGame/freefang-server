@@ -14,6 +14,7 @@ Example:
   "headers": {
     "target": "Alice"
   }
+}
 ```
 ```json
 {
@@ -22,4 +23,5 @@ Example:
     "target1": "Alice",
     "target2": "Bob"
   }
+}
 ```
