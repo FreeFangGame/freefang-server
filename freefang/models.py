@@ -77,6 +77,8 @@ class WWgame:
 		self.outputs.remove(player.connection)
 		print(f"{player.name} disconnected")
 	def kill_player(self, player):
+		# TODO: Maybe add a list to keep track of players that are alive, also add a list of death that happen during each night
+		# to notify the players when day rises 
 		print(player.name + " died")
 		player.alive = False
 
