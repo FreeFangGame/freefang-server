@@ -25,3 +25,11 @@ class Time_change:
 		self.headers = {
 			"time": time,
 		}
+# Event for when a werewolf votes, should only be sent to werewolves
+class Werewolf_vote:
+	def __init__(self, target, sender):
+		self.action = "werewolf_vote"
+		self.headers = {
+			"sender": sender,
+			"target": target
+		}

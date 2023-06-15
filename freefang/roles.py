@@ -2,7 +2,6 @@ try:
     from freefang.events import *
     import freefang.freefang_net as fn
 except ImportError:
-    from events import *
     import freefang_net as fn
   
 import json
