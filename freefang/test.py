@@ -3,6 +3,8 @@ import time
 import random
 import sys
 import json
+import traceback
+import struct
 #names = ["ABCDEFG", "Alice", "Bob", "Malefoy", "Eve", "jjj", "test"]
 names = [str(sys.argv[1])]
 
@@ -25,10 +27,10 @@ ww_json = """
 #json = str(len(json)) + "\r" + json
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 s.connect(("127.0.0.1", 9999))
-s.send((str(len(join_json)) + "\r" + join_json).encode())
-print(s.recv(4096).decode())
+s.send(struct.pack("<I", len(join_json)) + join_json.encode())
 while True:
-	i = s.recv(4096).decode()
+	leng = struct.unpack("<I", s.recv(4))[0]
+	i = s.recv(leng).decode()
 	if i:
 		role = ""
 		try:
@@ -37,9 +39,9 @@ while True:
 			role = jsn["headers"]["role"]
 			if role == "Werewolf":
 				print("Werewolf")
-				s.send((str(len(ww_json)) + "\r" + ww_json).encode())
+				s.send(struct.pack("<I", len(ww_json)) + ww_json.encode())
 		except Exception as e:
-			
+			#traceback.print_exc()
 			print(i)
 			continue
 	print(i)

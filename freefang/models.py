@@ -57,7 +57,7 @@ class WWgame:
 			for _ in range(x): 
 				index = random.randint(0, len(noroles) - 1)
 				noroles[index].role = i # Give that role to a random player and remove him from that list
-				noroles[index].connection.send(utils.obj_to_json(packets.Role_attributed(role=i.__name__)).encode())# To replace with json
+				fn.send_packet(utils.obj_to_json(packets.Role_attributed(role=i.__name__)), noroles[index].connection)
 				print(f"Player {noroles[index].name} got role {i.__name__}") 
 
 				if noroles[index].iswerewolf():
@@ -105,6 +105,9 @@ class WWgame:
 				self.msgqueues[i] += string
 			else:
 				self.msgqueues[i] = string
+	def sendall(self, string):
+		for i in self.players:
+			fn.send_packet(string,i.connection)
 	def queuewerewolves(self, string): # Send a message to all wolves
 		for i in self.werewolves:				
 			if self.msgqueues.get(i.connection):
@@ -147,7 +150,7 @@ class WWgame:
 
 			for i in write:
 				if self.msgqueues.get(i): # If a message is pending for a player send it to them
-					i.sendall(self.msgqueues[i].encode())
+					fn.send_packet(self.msgqueues[i], i)
 					del self.msgqueues[i] # No more message needed to send
 					
 				else:
@@ -180,7 +183,7 @@ class WWgame:
 		self.socket.setblocking(0)
 		while len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
-			self.queueall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
+			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
 			for i in self.nightroles:
 				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 				self.up = i
