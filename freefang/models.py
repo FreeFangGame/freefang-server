@@ -99,12 +99,21 @@ class WWgame:
 		
 	def isnight(self):
 		return self.time == 0
+	# Those two functions queue a message to be sent to all players or all wolves during the select loop
 	def queueall(self, string): # Send a message to all players
 		for i in self.outputs:
 			if self.msgqueues.get(i):
 				self.msgqueues[i] += string
 			else:
 				self.msgqueues[i] = string
+	def queuewerewolves(self, string): # Send a message to all wolves
+		for i in self.werewolves:				
+			if self.msgqueues.get(i.connection):
+				self.msgqueues[i.connection] += string
+			else:
+				self.msgqueues[i.connection] = string
+				
+	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
 		for i in self.players:
 			fn.send_packet(string,i.connection)
@@ -113,12 +122,7 @@ class WWgame:
 		for i in self.werewolves:
 			fn.send_packet(string,i.connection)
 			
-	def queuewerewolves(self, string): # Send a message to all wolves
-		for i in self.werewolves:				
-			if self.msgqueues.get(i.connection):
-				self.msgqueues[i.connection] += string
-			else:
-				self.msgqueues[i.connection] = string
+
 	def getplayerbyname(self, name):
 		return [i for i in self.players if i.name == name][0]
 		
