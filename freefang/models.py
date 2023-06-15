@@ -127,10 +127,13 @@ class WWgame:
 					print("object made")
 					setattr(pckt.headers, "sender", self.connections[i])
 					print(f"Action {pckt.action}")
-					if not self.action_to_function[pckt.action](pckt.headers, self, i): # Returns 1 if failure
+					ret = self.action_to_function[pckt.action](pckt.headers, self, i)
+					if not ret: 
 						i.sendall(b"OK")
-					else:
-						i.sendall(b"BAD")# Go to except
+					elif ret == 2: # Go to next role as the current one is done with their business
+						return
+					else: # If 1 is returned then something went wrong, the packet is probably bad (for example voting someone who doesnt exist)
+						i.sendall(b"BAD") # Error
 				except Exception as e:
 					print("Error")
 					print(e)
