@@ -19,6 +19,30 @@ class Villager(Role):
 	def __init__(self):
 		super(Villager, self).__init__()
 		pass
+	@staticmethod
+	def vote(headers, game, connection):
+
+		# Check if time is day and sender hasnt voted yet
+		if game.up == 0 and headers.sender.voted == False:
+			# Create vote object
+			vt = TownVote(headers.target, headers.sender)
+			
+			# Cast vote
+			game.votes.apppend(vt)
+			
+			# Mark sender as already voted
+			headers.sender.voted = True
+
+			event = packets.Town_vote(target=headers.target, sender=headers.sender.name) # Create a packet indicating a person was voted
+			pckt = utils.obj_to_json(event) # Serialize it to json
+			game.queueall(pckt) # Send it to everyone
+			
+			if len(game.votes) == len(game.players): # All the werewolves voted
+
+			
+			
+
+			
 
 class Werewolf(Role):
 	def __init__(self):
@@ -46,6 +70,11 @@ class Werewolf(Role):
 					# Kill the player that was unanimously voted
 					kill = game.getplayerbyname(headers.target)
 					game.kill_player(kill)
+				# Make all werewolves able to vote again
+				for i in game.werewolves:
+					i.voted = False
+				# Reset game.votes
+				game.votes = []
 				return 2
 					
 				 
