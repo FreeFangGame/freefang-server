@@ -1,4 +1,4 @@
-import select, random, json
+import select, random, json, traceback
 import sys
 try:
 	from freefang.roles import *
@@ -131,28 +131,27 @@ class WWgame:
 			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
-			for i in read:
+			for i in read: # Check every connection that has sent a message
 				packet = fn.read_packet(i)
 				if not packet:
 					continue
 
 				try:
-					pckt = utils.json_to_object(packet)
-					print("object made")
-					setattr(pckt.headers, "sender", self.connections[i])
-					print(f"Action {pckt.action}")
-					ret = self.action_to_function[pckt.action](pckt.headers, self, i)
+					pckt = utils.json_to_object(packet) # Create an object from the packet
+					print(pckt.action)
+					setattr(pckt.headers, "sender", self.connections[i]) # Add the packet's sender to the object to use it in the event function
+					ret = self.action_to_function[pckt.action](pckt.headers, self, i) # Call an event function depending on the packet's action
 					if not ret: 
-						i.sendall(b"OK")
-					elif ret == 2: # Go to next role as the current one is done with their business
+						fn.send_success(i)
+					elif ret == 2: # End our loop and go to the next role
+						fn.send_success(i)
 						return
 					else: # If 1 is returned then something went wrong, the packet is probably bad (for example voting someone who doesnt exist)
-						i.sendall(b"BAD") # Error
+						raise Exception
 				except Exception as e:
-					print("Error")
-					print(e)
-					i.sendall(b"ERROR")
-						
+					traceback.print_exc()
+					fn.send_failure(i, error=None)
+
 					
 					
 

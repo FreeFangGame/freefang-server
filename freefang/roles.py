@@ -56,16 +56,16 @@ class Werewolf(Role):
 		
 
 class Vote:
-    def __init__(self):
-        self.sender = None
-        self.target = None
+    def __init__(self, target, sender):
+        self.sender = sender
+        self.target = target
 
-class CitizenVote(Vote):
-    def __init__(self):
-        super(CitizenVote, self).__init__()
+class TownVote(Vote):
+    def __init__(self, target, sender):
+        super(TownVote, self).__init__()
         pass
 
 class WerewolfVote(Vote):
     def __init__(self, target, sender):
-        super(WerewolfVote, self).__init__()
+        super(WerewolfVote, self).__init__(target, sender)
         pass

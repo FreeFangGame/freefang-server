@@ -34,9 +34,34 @@ class Werewolf_vote:
 			"target": target
 		}
 
+# Event for when someone votes during the day
+class Town_vote:
+	def __init__(self, target, sender):
+		self.action = "werewolf_vote"
+		self.headers = {
+			"sender": sender,
+			"target": target
+		}
+
 class Show_werewolves: # This packet is sent to all werewolves in the beginning of a game to know who other werewolves are
 	def __init__(self, werewolves):
 		self.action = "show_werewolves"
 		self.headers = {
 			"werewolves": werewolves,
 		}
+
+# This packet should be sent back to a player after something is done successfully.
+# For example if a werewolf sends a vote packet and it is taken into account, then return this packet
+class Action_success:
+	def __init__(self):
+		self.action = "action_success"
+
+# On the flip side this packet should be sent if there was an error processing a packet (i.e werewolf vote sent during the day)
+class Action_failure:
+	def __init__(self, error):
+		self.action = "action_failure"
+		self.headers = {
+			"error": error
+		}
+		
+
