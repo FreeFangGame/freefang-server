@@ -43,7 +43,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [Werewolf] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote,"test_event": test_event}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
@@ -102,16 +102,13 @@ class WWgame:
 	# Those two functions queue a message to be sent to all players or all wolves during the select loop
 	def queueall(self, string): # Send a message to all players
 		for i in self.outputs:
-			if self.msgqueues.get(i):
-				self.msgqueues[i] += string
-			else:
-				self.msgqueues[i] = string
+			self.msgqueues.setdefault(i, [])
+			self.msgqueues[i].append(string)
+
 	def queuewerewolves(self, string): # Send a message to all wolves
 		for i in self.werewolves:				
-			if self.msgqueues.get(i.connection):
-				self.msgqueues[i.connection] += string
-			else:
-				self.msgqueues[i.connection] = string
+			self.msgqueues.setdefault(i, [])
+			self.msgqueues[i].append(string)
 				
 	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
@@ -158,7 +155,9 @@ class WWgame:
 
 			for i in write:
 				if self.msgqueues.get(i): # If a message is pending for a player send it to them
-					fn.send_packet(self.msgqueues[i], i)
+					for x in self.msgqueues[i]:
+						
+						fn.send_packet(x, i)
 					del self.msgqueues[i] # No more message needed to send
 					
 				else:
