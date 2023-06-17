@@ -6,8 +6,11 @@ except ImportError:
     import freefang_net as fn
     import packets
     import freefang_utils as utils
-  
+	
+
 import json
+from operator import attrgetter
+
 
 class Role:
 	def __init__(self):
@@ -25,20 +28,40 @@ class Villager(Role):
 		# Check if time is day and sender hasnt voted yet
 		if game.up == 0 and headers.sender.voted == False:
 			# Create vote object
-			vt = TownVote(headers.target, headers.sender)
+			vt = TownVote(game.getplayerbyname(headers.target), headers.sender)
 			
 			# Cast vote
-			game.votes.apppend(vt)
+			game.votes.append(vt)
 			
 			# Mark sender as already voted
 			headers.sender.voted = True
+			
 
 			event = packets.Town_vote(target=headers.target, sender=headers.sender.name) # Create a packet indicating a person was voted
 			pckt = utils.obj_to_json(event) # Serialize it to json
 			game.queueall(pckt) # Send it to everyone
 			
-			if len(game.votes) == len(game.players): # All the werewolves voted
-
+			if len(game.votes) == len(game.players): # Everyone voted
+				votes = {}
+				
+				# Gather all votes in a dictionary along with their target
+				for i in game.votes:
+					votes.setdefault(i.target, 0)
+					votes[i.target] += 1
+				
+				# Get the highest number of votes on a player
+				maxvotes = max(votes.values())
+				
+				# Check if that player is tied with another for the amount of votes he was targeted by
+				ties = [key for key, value in votes.items() if value == maxvotes]
+				print(ties)
+				if len(ties) == 1:
+					game.kill_player(ties[0])
+					return 2
+				else:
+					return 2
+					
+				
 			
 			
 
@@ -91,7 +114,7 @@ class Vote:
 
 class TownVote(Vote):
     def __init__(self, target, sender):
-        super(TownVote, self).__init__()
+        super(TownVote, self).__init__(target, sender)
         pass
 
 class WerewolfVote(Vote):
