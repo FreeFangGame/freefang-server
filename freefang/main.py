@@ -54,21 +54,25 @@ def game_creation_loop():
 				
 				# Game joining
 				elif packet.action == "game_join":
-					p = models.Player()
-					p.name = packet.headers.name
-					p.connection = con
-					connections[i] = p
-					
-					games[packet.headers.gameid].players.append(p)
-					net.send_packet(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name)), i) # Send player a packet confirming success
-					
-					if len(games[packet.headers.gameid].players) == games[packet.headers.gameid].playercap:
-						thread = threading.Thread(target=games[packet.headers.gameid].gameloop)
-						thread.start()
-						for i in games[packet.headers.gameid].players:
-							inputs.remove(i.connection)
-							outputs.remove(i.connection)
-						del games[packet.headers.gameid]
+					if not games.get(packet.headers.gameid): # If the game for the proposed gameid doesn't exist
+						net.send_packet(utils.obj_to_json(packets.Action_failure(error="game_not_found")), i)
+					else:
+							
+						p = models.Player()
+						p.name = packet.headers.name
+						p.connection = con
+						connections[i] = p
+						
+						games[packet.headers.gameid].players.append(p)
+						net.send_packet(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name)), i) # Send player a packet confirming success
+						
+						if len(games[packet.headers.gameid].players) == games[packet.headers.gameid].playercap:
+							thread = threading.Thread(target=games[packet.headers.gameid].gameloop)
+							thread.start()
+							for i in games[packet.headers.gameid].players:
+								inputs.remove(i.connection)
+								outputs.remove(i.connection)
+							del games[packet.headers.gameid]
 				
 def main():
 	print("Starting FreeFang server.")
