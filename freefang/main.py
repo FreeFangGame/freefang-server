@@ -65,7 +65,6 @@ def game_creation_loop():
 					if len(games[packet.headers.gameid].players) == games[packet.headers.gameid].playercap:
 						thread = threading.Thread(target=games[packet.headers.gameid].gameloop)
 						thread.start()
-						print("GAME STARTED!!")
 						for i in games[packet.headers.gameid].players:
 							inputs.remove(i.connection)
 							outputs.remove(i.connection)
