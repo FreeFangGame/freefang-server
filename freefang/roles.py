@@ -24,11 +24,18 @@ class Villager(Role):
 		pass
 	@staticmethod
 	def vote(headers, game, connection):
+		
+		# Get the player object of the target
+		target = game.getplayerbyname(headers.target)
+
 
 		# Check if time is day and sender hasnt voted yet
-		if game.up == 0 and headers.sender.voted == False and headers.sender.alive:
+		# Reminder that game.up = 0 means that its day
+		if game.up == 0 and headers.sender.voted == False and headers.sender.alive and target.alive:
 			# Create vote object
-			vt = TownVote(game.getplayerbyname(headers.target), headers.sender)
+			vt = TownVote(target, headers.sender)
+			
+			
 			
 			# Cast vote
 			game.votes.append(vt)
@@ -74,8 +81,11 @@ class Werewolf(Role):
 		
 	@staticmethod
 	def vote(headers, game, connection):
+		
+		target = game.getplayerbyname(headers.target)
 
-		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False:
+
+		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive:
 				
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)
