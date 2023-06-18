@@ -26,7 +26,7 @@ class Villager(Role):
 	def vote(headers, game, connection):
 
 		# Check if time is day and sender hasnt voted yet
-		if game.up == 0 and headers.sender.voted == False:
+		if game.up == 0 and headers.sender.voted == False and headers.sender.alive:
 			# Create vote object
 			vt = TownVote(game.getplayerbyname(headers.target), headers.sender)
 			
@@ -41,7 +41,7 @@ class Villager(Role):
 			pckt = utils.obj_to_json(event) # Serialize it to json
 			game.queueall(pckt) # Send it to everyone
 			
-			if len(game.votes) == len(game.players): # Everyone voted
+			if len(game.votes) == len(game.alive): # Everyone voted
 				votes = {}
 				
 				# Gather all votes in a dictionary along with their target
@@ -75,7 +75,7 @@ class Werewolf(Role):
 	@staticmethod
 	def vote(headers, game, connection):
 
-		if game.up == Werewolf and headers.sender.role == Werewolf and headers.sender.voted == False:
+		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False:
 				
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)

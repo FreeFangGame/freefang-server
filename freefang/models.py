@@ -27,13 +27,15 @@ class Player:
 		self.voted = False
 		self.time = 0 # 0 = Night, 1 = Day
 	def iswerewolf(self):
-		return issubclass(self.role, Werewolf)
+		return issubclass(self.role, Werewolf) and self.alive
 			
 
 
 class WWgame:
 	def __init__(self):
 		self.players = []
+		self.alive = []
+		self.dead = []
 		self.playercap = 0
 		self.werewolves = []
 		self.villagers = []
@@ -85,6 +87,25 @@ class WWgame:
 		# Notify everyone that player died
 		event = packets.Player_death(name=player.name, role=player.role.__name__, reason=reason)
 		self.queueall(utils.obj_to_json(event))
+		
+		# Remove player from various lists reserved to living players
+		if player in self.werewolves:
+			self.werewolves.remove(player)
+		else:
+			self.villagers.remove(player)
+			
+		self.alive.remove(player)
+		
+		# Add player to list of dead players
+		self.dead.append(player)
+		
+		
+		
+		
+		
+		
+		
+		
 
 	def handle_disconnections(self):
 		disconnected_players = [] # Track multiple disconnections at a time
@@ -185,8 +206,10 @@ class WWgame:
 		# Start game and distribute roles
 		print("Game starting")
 		self.handle_disconnections()
-
 		self.distribute_roles()
+		
+		# Create the list of alive players
+		self.alive = [i for i in self.players]
 		
 		for i in self.players:
 			self.connections[i.connection] = i
@@ -215,5 +238,6 @@ class WWgame:
 			self.queueall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
 
 			self.eventloop()
+			
 
 
