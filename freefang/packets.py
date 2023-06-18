@@ -37,7 +37,7 @@ class Werewolf_vote:
 # Event for when someone votes during the day
 class Town_vote:
 	def __init__(self, target, sender):
-		self.action = "werewolf_vote"
+		self.action = "town_vote"
 		self.headers = {
 			"sender": sender,
 			"target": target
@@ -62,6 +62,15 @@ class Action_failure:
 		self.action = "action_failure"
 		self.headers = {
 			"error": error
+		}
+		
+class Player_death:
+	def __init__(self, name, role, reason):
+		self.action = "player_death"
+		self.headers = {
+			"name": name,
+			"role": role,
+			"reason": reason
 		}
 		
 

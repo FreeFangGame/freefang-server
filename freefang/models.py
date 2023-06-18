@@ -76,11 +76,15 @@ class WWgame:
 		self.inputs.remove(player.connection)
 		self.outputs.remove(player.connection)
 		print(f"{player.name} disconnected")
-	def kill_player(self, player):
+	def kill_player(self, player, reason=None):
 		# TODO: Maybe add a list to keep track of players that are alive, also add a list of death that happen during each night
 		# to notify the players when day rises 
 		print(player.name + " died")
 		player.alive = False
+		
+		# Notify everyone that player died
+		event = packets.Player_death(name=player.name, role=player.role.__name__, reason=reason)
+		self.queueall(utils.obj_to_json(event))
 
 	def handle_disconnections(self):
 		disconnected_players = [] # Track multiple disconnections at a time
@@ -107,8 +111,8 @@ class WWgame:
 
 	def queuewerewolves(self, string): # Send a message to all wolves
 		for i in self.werewolves:				
-			self.msgqueues.setdefault(i, [])
-			self.msgqueues[i].append(string)
+			self.msgqueues.setdefault(i.connection, [])
+			self.msgqueues[i.connection].append(string)
 				
 	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
@@ -124,7 +128,8 @@ class WWgame:
 		return [i for i in self.players if i.name == name][0]
 		
 	def eventloop(self): 
-		while True: # This loop will eventually be broken, can be while true.
+		end = None
+		while not end: # This loop will eventually be broken, can be while true.
 			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
@@ -142,7 +147,10 @@ class WWgame:
 						fn.send_success(i)
 					elif ret == 2: # End our loop and go to the next role
 						fn.send_success(i)
-						return
+						
+						# Set end to true to end the loop after message sending is done, then break as no more packets are needed
+						end = True
+						break
 					else: # If 1 is returned then something went wrong, the packet is probably bad (for example voting someone who doesnt exist)
 						raise Exception
 				except Exception as e:
