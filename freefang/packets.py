@@ -81,4 +81,11 @@ class Player_death:
 			"reason": reason
 		}
 		
+		
+class Game_end:
+	def __init__(self, outcome):
+		self.action = "game_end"
+		self.headers = {
+			"outcome": outcome
+		}
 

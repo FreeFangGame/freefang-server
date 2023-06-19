@@ -238,5 +238,20 @@ class WWgame:
 
 			self.eventloop()
 			
+		# The game ends if the loop above is over
+		
+		print("Game end")
+		
+		outcome = ""
+		# If all werewolves are dead aka villager win, otherwise its a werewolf win
+		if len(self.werewolves) == 0:
+			outcome = "town_win"
+		else:
+			outcome = "werewolf_win"
+			
+		self.sendall(utils.obj_to_json(packets.Game_end(outcome=outcome)))
+		
+		
+		
 
 
