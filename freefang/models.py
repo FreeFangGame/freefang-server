@@ -49,7 +49,7 @@ class WWgame:
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
-		self.roles = {Villager: 3, Werewolf: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
+		self.roles = {Villager: 4, Werewolf: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
 	def distribute_roles(self):
 		noroles = [i for i in self.players] # Get all the players and keep track of those with no roles
 		print("Distributing roles to players")
@@ -220,10 +220,9 @@ class WWgame:
 		
 
 		# Setup I/O channels for select as well as message queue for each player
-		self.inputs = [self.socket] + [i.connection for i in self.players]
+		self.inputs = [i.connection for i in self.players]
 		self.outputs = [i.connection for i in self.players]
 
-		self.socket.setblocking(0)
 		while len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
 			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen

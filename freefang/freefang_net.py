@@ -4,7 +4,12 @@ import packets
 
 def readlength(con): # Read the length of the packet prepended to it
 	unpack = con.recv(4) 
-	return struct.unpack("<I", unpack)[0] #TODO: Handle packets without length header
+	leng = 0
+	try:
+		leng = struct.unpack("<I", unpack)[0]
+		return leng
+	except:
+		return None
 			
 def read_packet(con):
 	length = readlength(con)

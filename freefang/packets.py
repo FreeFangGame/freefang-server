@@ -5,6 +5,14 @@ class Added_to_game: #Packet for when a player is added to a game
 			"username": username
 		}
 
+class Game_created:
+	def __init__(self, gameid):
+		self.action = "game_created"
+		self.headers = {
+			"id": gameid
+		}
+
+
 class Role_attributed:
 	def __init__(self, role):
 		self.action = "role_attributed"
