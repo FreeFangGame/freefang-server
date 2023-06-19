@@ -60,19 +60,21 @@ def game_creation_loop():
 							
 						p = models.Player()
 						p.name = packet.headers.name
-						p.connection = con
+						p.connection = i
 						connections[i] = p
 						
 						games[packet.headers.gameid].players.append(p)
 						net.send_packet(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name)), i) # Send player a packet confirming success
 						
 						if len(games[packet.headers.gameid].players) == games[packet.headers.gameid].playercap:
+
 							thread = threading.Thread(target=games[packet.headers.gameid].gameloop)
-							thread.start()
 							for i in games[packet.headers.gameid].players:
 								inputs.remove(i.connection)
 								outputs.remove(i.connection)
 							del games[packet.headers.gameid]
+							thread.start()
+
 				
 def main():
 	print("Starting FreeFang server.")
