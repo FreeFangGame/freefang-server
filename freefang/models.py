@@ -231,7 +231,8 @@ class WWgame:
 				self.up = i
 				self.eventloop()
 				
-			
+			if len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: # Game ended during the night, we dip
+				break
 			self.up = 0
 			self.time = 1
 			self.queueall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
