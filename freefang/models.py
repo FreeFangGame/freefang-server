@@ -231,7 +231,7 @@ class WWgame:
 				self.up = i
 				self.eventloop()
 				
-			if len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: # Game ended during the night, we dip
+			if not (len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0): # Game ended during the night, we dip
 				break
 			self.up = 0
 			self.time = 1
