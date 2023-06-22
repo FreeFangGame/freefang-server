@@ -1,8 +1,16 @@
 class Added_to_game: #Packet for when a player is added to a game
-	def __init__(self, username):
+	def __init__(self, username, players):
 		self.action = "added_to_game"
 		self.headers = {
-			"username": username
+			"username": username,
+			"players": players # List of the players currently in the game
+		}
+
+class Player_join:
+	def __init__(self, username):
+		self.action = "player_join"
+		self.headers = {
+			"name": username,
 		}
 
 class Game_created:
