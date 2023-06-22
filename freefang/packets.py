@@ -81,7 +81,6 @@ class Player_death:
 			"reason": reason
 		}
 		
-		
 class Game_end:
 	def __init__(self, outcome):
 		self.action = "game_end"
@@ -89,3 +88,12 @@ class Game_end:
 			"outcome": outcome
 		}
 
+class ChatMessage:
+    def __init__(self, sender, recipient, message, timestamp):
+        self.action = "chat_message"
+        self.headers = {
+            "sender": sender,
+            "recipient": recipient,
+            "message": message,
+            "timestamp": timestamp
+        }

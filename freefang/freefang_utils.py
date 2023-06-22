@@ -1,5 +1,6 @@
 import random, string, json
 from types import SimpleNamespace
+import datetime
 
 def randstring():
 	alphabet = list("abcdefghijklmnopqrstuvwxyz")
@@ -10,3 +11,8 @@ def json_to_object(data): # Turn json data into an object
 
 def obj_to_json(obj):
 	return json.dumps(obj.__dict__)
+
+def get_current_timestamp():
+    current_time = datetime.datetime.now()
+    timestamp = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp
