@@ -44,7 +44,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [Werewolf] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "test_event": test_event}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
@@ -73,6 +73,13 @@ class WWgame:
 		packet = utils.obj_to_json(msg)
 		for i in self.players:
 			fn.send_packet(packet, i.connection) # Send it to all players
+	
+	def werewolfmessage(self, headers, game, connection):
+		msg = packets.ChatMessage(headers.sender.name, headers.message, str(datetime.datetime.now())) # Create message packet
+		packet = utils.obj_to_json(msg)
+		for i in self.werewolves:
+			fn.send_packet(packet, i.connection) # Send it to all werewolves
+		
 		
 			
 	def update_player_count(self):
