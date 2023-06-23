@@ -97,11 +97,10 @@ class Game_end:
 		}
 
 class ChatMessage:
-    def __init__(self, sender, recipient, message, timestamp):
+    def __init__(self, sender, message, timestamp):
         self.action = "chat_message"
         self.headers = {
             "sender": sender,
-            "recipient": recipient,
             "message": message,
             "timestamp": timestamp
         }
