@@ -130,6 +130,15 @@ class Seer:
 			return 2
 		return 1
 		
+# The hunter gets to kill a player of his choice upon death
+class Hunter:
+	@staticmethod
+	def kill(headers, game, connection):
+		target = game.getplayerbyname(headers.target)
+		if game.up == Hunter and headers.sender.role == Hunter and target.alive:
+			game.kill_player(target, reason="hunter_kill")
+			return 2
+		return 1
 
 class Vote:
     def __init__(self, target, sender):
