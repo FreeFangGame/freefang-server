@@ -116,6 +116,20 @@ class Werewolf(Role):
 			return 1
 		
 		
+# The seer is supposed to be able to learn about the role of one player each night
+class Seer:
+	@staticmethod
+	def reveal(headers, game, connection):
+		target = game.getplayerbyname(headers.target)
+		# Check if the player is actually a seer, if the role currently woken up is seer, and if the target is alive
+		if game.up == Seer and headers.sender.role == Seer and target.alive:
+			# Create packet
+			packet = packets.SeerReveal(target.role.__name__, target.name)
+			# Send packet containing the desired info to the seer
+			fn.send_packet(utils.obj_to_json(packet), connection)
+			return 2
+		return 1
+		
 
 class Vote:
     def __init__(self, target, sender):

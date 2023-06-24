@@ -42,13 +42,13 @@ class WWgame:
 		self.inputs = []
 		self.outputs = []
 		self.msgqueues = {}
-		self.nightroles = [Werewolf] # Roles that should be woken up at night, in order
+		self.nightroles = [Seer, Werewolf] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "seer_reveal":Seer.reveal, "test_event": test_event}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
-		self.roles = {Villager: 4, Werewolf: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
+		self.roles = {Villager: 3, Werewolf: 1, Seer: 1} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
 	def distribute_roles(self):
 		noroles = [i for i in self.players] # Get all the players and keep track of those with no roles
 		print("Distributing roles to players")

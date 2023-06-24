@@ -104,3 +104,11 @@ class ChatMessage:
             "message": message,
             "timestamp": timestamp
         }
+
+class SeerReveal:
+    def __init__(self, role, name):
+        self.action = "seer_role_reveal"
+        self.headers = {
+			"role": role,
+			"name": name
+        }
