@@ -7,6 +7,15 @@ import packets
 import uuid
 import threading
 import select
+import roles
+
+def parse_ruleset(ruleset):
+	ret = {}
+	for key, value in ruleset.__dict__.items():
+		ret[getattr(roles, key)] = value
+
+	return ret
+	
 
 def game_creation_loop():
 	
@@ -47,9 +56,14 @@ def game_creation_loop():
 					gameid = str(uuid.uuid4())
 					game = models.WWgame()
 					game.playercap = packet.headers.playercap
+					game.roles = parse_ruleset(packet.headers.ruleset)
+					for rl in game.roles: 
+						if rl != roles.Villager:
+							game.nightroles.append(rl)
+						
 					games[gameid] = game
 					net.send_packet(utils.obj_to_json(packets.Game_created(gameid=gameid)), i) # Send player a packet confirming success
-
+					
 					print("New game")
 				
 				# Game joining
