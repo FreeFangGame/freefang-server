@@ -1,5 +1,12 @@
 # FreeFang
  A free implementation of the Werewolf game in python.
+ Currently in beta, however it is usable and all core features are implemented.
+
+# Clients
+
+[freefang-qt](https://github.com/FreeFangGame/freefang-qt) is the reference client written by the devs.
+You are free to write your own, full protocol documentation is coming.
+
 
 
 # Protocol documentation
@@ -26,3 +33,4 @@ Example:
   }
 }
 ```
+n 
