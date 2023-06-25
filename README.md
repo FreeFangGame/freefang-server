@@ -5,7 +5,7 @@
 # Clients
 
 [freefang-qt](https://github.com/FreeFangGame/freefang-qt) is the reference client written by the devs.
-You are free to write your own, full protocol documentation is coming.
+You are free to write your own and PR to have it added here, full protocol documentation is coming.
 
 
 
