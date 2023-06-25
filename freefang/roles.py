@@ -61,13 +61,13 @@ class Villager(Role):
 				
 				# Check if that player is tied with another for the amount of votes he was targeted by
 				ties = [key for key, value in votes.items() if value == maxvotes]
-				print(ties)
-				if len(ties) == 1:
-					game.kill_player(ties[0])
-					return 2
-				else:
-					return 2
-					
+				
+				for i in game.players:
+					i.voted = False # Set all players like they havent voted yet
+				game.votes = []
+				game.kill_player(ties[0])
+				return 2
+
 				
 			
 			
@@ -83,7 +83,6 @@ class Werewolf(Role):
 	def vote(headers, game, connection):
 		
 		target = game.getplayerbyname(headers.target)
-
 
 		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive:
 				
