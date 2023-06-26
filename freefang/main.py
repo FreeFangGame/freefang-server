@@ -53,7 +53,7 @@ def game_creation_loop():
 				try:
 					packet = net.read_packet(i)
 					if not packet: # If no packet is sent we bail out
-						#net.send_packet("", i)
+						net.send_packet("", i)
 						continue
 					packet = utils.json_to_object(packet)
 					
