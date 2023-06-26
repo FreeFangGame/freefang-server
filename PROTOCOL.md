@@ -120,7 +120,7 @@ Sent by the seer once he is woken up to obtain the role of one player.
 
 ```json
 {
-  "action": "seer_reveal
+  "action": "seer_reveal"
   "headers": {
     "target": "Waltuh"
   }
@@ -134,7 +134,7 @@ Sent by the hunter once he is killed, he is allowed to kill anyone in the game.
 {
   "action": "hunter_kill",
   "headers": {
-    "target: "Ehrmantraut"
+    "target": "Ehrmantraut"
   }
 }
 ```
