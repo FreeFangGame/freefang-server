@@ -51,7 +51,7 @@ Example:
 ### game_join
 This packet is sent upon joining a game.
 name represents the username you choose to play as.
-gameid representts the ID of the gams you want to join
+gameid representts the ID of the game you want to join
 Example:
 
 ```json
