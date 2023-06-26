@@ -1,4 +1,4 @@
-import select, random, json, traceback, sys, datetime
+import select, random, json, traceback, sys, datetime, time
 try:
 	from freefang.roles import *
 	import freefang.freefang_net as fn
@@ -183,6 +183,7 @@ class WWgame:
 	def eventloop(self): 
 		end = None
 		while not end: # This loop will eventually be broken, can be while true.
+			time.sleep(0.1)
 			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
