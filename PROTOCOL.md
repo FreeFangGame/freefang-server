@@ -6,13 +6,15 @@ Each packet should have an action key that defines what it does and headers for 
 Other players are refered to by their usernames, which they choose upon game entry.
 Example:
 
+```json
 {
   "action": "werewolf_vote",
   "headers": {
     "target": "Alice"
   }
 }
-
+```
+```json
 {
   "action": "cupid_infatuate",
   "headers": {
@@ -20,6 +22,7 @@ Example:
     "target2": "Bob"
   }
 }
+```
 
 # Packet list
 ## Client

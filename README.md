@@ -19,30 +19,7 @@ You are free to write your own and PR to have it added here, full protocol docum
 
 
 # Protocol documentation
-FreeFang clients and server communicate using TCP, packets are sent in the form of json prefixed by the packet length as 4 little endian bytes.  
-In python this is done with `struct.pack("<I", length)`.  
-Each packet should have an action key that defines what it does and headers for extra info such as the target.  
-Other players are refered to by their usernames, which they choose upon game entry.  
-Example:
 
-```json
-{
-  "action": "werewolf_vote",
-  "headers": {
-    "target": "Alice"
-  }
-}
-```
-```json
-{
-  "action": "cupid_infatuate",
-  "headers": {
-    "target1": "Alice",
-    "target2": "Bob"
-  }
-}
-```
-Once a packet is sent, the server can reply with a packet with the action "action_success", "action_failure" or/and and another action related to the packet you've sent (i.e send you the role of a player if you revealed it as the seer).
-
+Full protocol documentation in PROTOCOL.md with examples and complete descriptions.   
 
 
