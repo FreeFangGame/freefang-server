@@ -32,6 +32,7 @@ class Player:
 
 class WWgame:
 	def __init__(self):
+		self.nightdeaths = []
 		self.players = []
 		self.alive = []
 		self.dead = []
@@ -99,7 +100,13 @@ class WWgame:
 		
 		# Notify everyone that player died
 		event = packets.Player_death(name=player.name, role=player.role.__name__, reason=reason)
-		self.queueall(utils.obj_to_json(event))
+		
+		# If the player died during the night we keep it in a list to notify the other players when the day rises
+		# Otherwise we just send the packet right away
+		if self.up != 0:
+			self.nightdeaths.append(event)
+		else:
+			self.queueall(utils.obj_to_json(event))
 		
 		# Remove player from various lists reserved to living players
 		if player in self.werewolves:
@@ -248,12 +255,20 @@ class WWgame:
 				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 				self.up = i
 				self.eventloop()
+			
+			self.queueall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
+			self.up = 0
+			self.time = 1
+			
+			
+			# Notify all players of deaths that happened during the night. 
+			for death in self.nightdeaths:
+				self.sendall(utils.obj_to_json(death))
+			self.nightdeaths = []
 				
 			if not (len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0): # Game ended during the night, we dip
 				break
-			self.up = 0
-			self.time = 1
-			self.queueall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
+
 
 			self.eventloop()
 			
