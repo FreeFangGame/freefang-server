@@ -85,7 +85,8 @@ class Werewolf(Role):
 		target = game.getplayerbyname(headers.target)
 
 		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive:
-				
+			if target == headers.sender.protected:
+				return 3  # protected player case (3)
 			vt = WerewolfVote(headers.target, headers.sender)
 			game.votes.append(vt)
 			headers.sender.voted = True
@@ -138,6 +139,21 @@ class Hunter:
 			game.kill_player(target, reason="hunter_kill")
 			return 2
 		return 1
+
+# can prevent one person of his choosing from dying at each night	
+class Protector(Role):
+    def __init__(self):
+        super(Protector, self).__init__()
+	
+    @staticmethod
+    def protect(headers, game, connection):
+        target = game.getplayerbyname(headers.target)
+        
+        # if both protector and target are alive, modify the headers
+        if headers.sender.alive and target.alive:
+            headers.sender.protected = target
+            return 2
+        return 1
 
 class Vote:
     def __init__(self, target, sender):

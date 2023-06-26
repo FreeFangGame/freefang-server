@@ -25,6 +25,7 @@ class Player:
 		self.voted_by = 0 # Number of people who voted for this player
 		self.voted = False
 		self.time = 0 # 0 = Night, 1 = Day
+		self.protected = None # name of the protected player
 	def iswerewolf(self):
 		return issubclass(self.role, Werewolf) and self.alive
 			
@@ -117,24 +118,19 @@ class WWgame:
 		# Add player to list of dead players
 		self.dead.append(player)
 		
-		
-		
-		
-		
-		
-		
-		
 
 	def handle_disconnections(self):
 		disconnected_players = [] # Track multiple disconnections at a time
 		for player in self.players:
 			try:
 				player.connection.send(b"")  # Sending empty message to check connection status
-
 			except:
 				disconnected_players.append(player)
 
 		for player in disconnected_players:
+			if player.protected:
+				player.protected = None
+
 			self.remove_player(player)
 
 		#self.update_player_count()

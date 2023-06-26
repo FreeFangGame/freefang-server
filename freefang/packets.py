@@ -14,10 +14,11 @@ class Player_join:
 		}
 
 class Game_created:
-	def __init__(self, gameid):
+	def __init__(self, gameid, roles):
 		self.action = "game_created"
 		self.headers = {
-			"id": gameid
+			"id": gameid,
+			"roles" : roles # supplied list of playing roles
 		}
 
 
