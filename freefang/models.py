@@ -26,6 +26,7 @@ class Player:
 		self.voted = False
 		self.time = 0 # 0 = Night, 1 = Day
 		self.protected = None # name of the protected player
+		self.game = None
 	def iswerewolf(self):
 		return issubclass(self.role, Werewolf) and self.alive
 			
@@ -237,7 +238,7 @@ class WWgame:
 		# Start game and distribute roles
 		print("Game starting")
 		
-		# Sort night roles by the order at which they should wake up
+		# Sort night roles by the order at which they should wake up (see roles.py)
 		self.nightroles.sort(key=lambda x: x.order)
 		
 		self.handle_disconnections()

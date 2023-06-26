@@ -12,6 +12,12 @@ class Player_join:
 		self.headers = {
 			"name": username,
 		}
+class Player_leave:
+	def __init__(self, username):
+		self.action = "player_leave"
+		self.headers = {
+			"name": username,
+		}
 
 class Game_created:
 	def __init__(self, gameid):
@@ -116,4 +122,9 @@ class SeerReveal:
 class Town_Vote_Begin:
 	def __init__(self):
 		self.action = "town_vote_begin"
+
+class Check_alive:
+	def __init__(self):
+		self.action = "check_alive"
+	
 
