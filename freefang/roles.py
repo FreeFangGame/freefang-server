@@ -78,6 +78,7 @@ class Villager(Role):
 
 class Werewolf(Role):
 	nightrole = 1
+	order = 3
 	def __init__(self):
 		super(Werewolf, self).__init__()
 		pass
@@ -122,6 +123,7 @@ class Werewolf(Role):
 # The seer is supposed to be able to learn about the role of one player each night
 class Seer:
 	nightrole = 1
+	order = 2
 	@staticmethod
 	def reveal(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
@@ -148,6 +150,7 @@ class Hunter:
 # can prevent one person of his choosing from dying at each night	
 class Protector(Role):
 	nightrole = 1
+	order = 1
 	def __init__(self):
 		super(Protector, self).__init__()
 	

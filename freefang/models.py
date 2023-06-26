@@ -236,6 +236,10 @@ class WWgame:
 	def gameloop(self):
 		# Start game and distribute roles
 		print("Game starting")
+		
+		# Sort night roles by the order at which they should wake up
+		self.nightroles.sort(key=lambda x: x.order)
+		
 		self.handle_disconnections()
 		self.distribute_roles()
 		
