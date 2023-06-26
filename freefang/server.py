@@ -37,7 +37,7 @@ def game_creation_loop():
 	
 	
 	while True:
-		time.sleep(0.05)
+		time.sleep(0.1)
 		read, write, excp = select.select(inputs, outputs, inputs)
 		
 		for i in read:

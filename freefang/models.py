@@ -183,7 +183,7 @@ class WWgame:
 	def eventloop(self): 
 		end = None
 		while not end: # This loop will eventually be broken, can be while true.
-			time.sleep(0.1)
+			time.sleep(0.05)
 			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
