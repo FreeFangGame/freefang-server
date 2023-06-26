@@ -17,8 +17,7 @@ class Game_created:
 	def __init__(self, gameid, roles):
 		self.action = "game_created"
 		self.headers = {
-			"id": gameid,
-			"roles" : roles # supplied list of playing roles
+			"id": gameid
 		}
 
 
