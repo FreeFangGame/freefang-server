@@ -2,6 +2,14 @@
  A free implementation of the Werewolf game in python.
  Currently in beta, however it is usable and all core features are implemented.
 
+# Gameplay
+This game opposes two sides, the werewolves (minority) and the town (majority).
+The goal of the town is to exterminate the werewolves and the goal of the werewolves is to reach numerical parity with the town.
+The game happens in a cycle of night and day. During the night roles with different powers (such as finding out the role of another player) wake up and the werewolves vote to kill one non-werewolf.
+During the day the town (with the werewolves hidden among them) vote to kill one player which they suspect to be a werewolf. The town does not know who the werewolves are and rely on clues/info given to them by the different roles.
+
+This game is about social deduction, lying, persuasion, finding and using clues, etc.
+
 # Features
 
 - Full werewolf experience with quite a few roles to pick from.  
