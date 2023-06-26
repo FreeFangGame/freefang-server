@@ -42,3 +42,7 @@ Example:
   }
 }
 ```
+Once a packet is sent, the server can reply with a packet with the action "action_success", "action_failure" or/and and another action related to the packet you've sent (i.e send you the role of a player if you revealed it as the seer).
+
+
+
