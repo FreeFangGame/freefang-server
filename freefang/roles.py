@@ -19,8 +19,10 @@ class Role:
 
 # There should be more roles in the future that will inherit those
 class Villager(Role):
+	nightrole = 0
 	def __init__(self):
 		super(Villager, self).__init__()
+		
 		pass
 	@staticmethod
 	def vote(headers, game, connection):
@@ -75,6 +77,7 @@ class Villager(Role):
 			
 
 class Werewolf(Role):
+	nightrole = 1
 	def __init__(self):
 		super(Werewolf, self).__init__()
 		pass
@@ -118,6 +121,7 @@ class Werewolf(Role):
 		
 # The seer is supposed to be able to learn about the role of one player each night
 class Seer:
+	nightrole = 1
 	@staticmethod
 	def reveal(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
@@ -132,6 +136,7 @@ class Seer:
 		
 # The hunter gets to kill a player of his choice upon death
 class Hunter:
+	nightrole = 0
 	@staticmethod
 	def kill(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
@@ -142,18 +147,19 @@ class Hunter:
 
 # can prevent one person of his choosing from dying at each night	
 class Protector(Role):
-    def __init__(self):
-        super(Protector, self).__init__()
+	nightrole = 1
+	def __init__(self):
+		super(Protector, self).__init__()
 	
-    @staticmethod
-    def protect(headers, game, connection):
-        target = game.getplayerbyname(headers.target)
-        
-        # if both protector and target are alive, modify the headers
-        if headers.sender.alive and target.alive:
-            headers.sender.protected = target
-            return 2
-        return 1
+	@staticmethod
+	def protect(headers, game, connection):
+		target = game.getplayerbyname(headers.target)
+    
+		# if both protector and target are alive, modify the headers
+		if headers.sender.alive and target.alive:
+			headers.sender.protected = target
+			return 2
+		return 1
 
 class Vote:
     def __init__(self, target, sender):

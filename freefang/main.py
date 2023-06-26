@@ -58,7 +58,7 @@ def game_creation_loop():
 					game.playercap = packet.headers.playercap
 					game.roles = parse_ruleset(packet.headers.ruleset)
 					for rl in game.roles: 
-						if rl != roles.Villager:
+						if rl.nightrole:
 							game.nightroles.append(rl)
 						
 					games[gameid] = game

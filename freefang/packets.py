@@ -14,7 +14,7 @@ class Player_join:
 		}
 
 class Game_created:
-	def __init__(self, gameid, roles):
+	def __init__(self, gameid):
 		self.action = "game_created"
 		self.headers = {
 			"id": gameid
@@ -112,3 +112,8 @@ class SeerReveal:
 			"role": role,
 			"name": name
         }
+        
+class Town_Vote_Begin:
+	def __init__(self):
+		self.action = "town_vote_begin"
+
