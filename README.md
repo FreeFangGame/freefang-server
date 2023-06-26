@@ -1,5 +1,5 @@
 # FreeFang
- A free implementation of the Werewolf game in python.
+ A free implementation [Werewolf](https://en.m.wikipedia.org/wiki/Mafia_(party_game)) in python.
  Currently in beta, however it is usable and all core features are implemented.
 
 # Gameplay
