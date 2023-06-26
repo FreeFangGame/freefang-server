@@ -93,6 +93,13 @@ class WWgame:
 		self.inputs.remove(player.connection)
 		self.outputs.remove(player.connection)
 		print(f"{player.name} disconnected")
+		
+	
+	# This function checks if the conditions for game end are met
+	def game_continues(self):
+		return (len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0)
+		
+		
 	def kill_player(self, player, reason=None):
 		# TODO: Maybe add a list to keep track of players that are alive, also add a list of death that happen during each night
 		# to notify the players when day rises 
@@ -247,7 +254,7 @@ class WWgame:
 		self.inputs = [i.connection for i in self.players]
 		self.outputs = [i.connection for i in self.players]
 
-		while len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0: 
+		while self.game_continues(): 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
 			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
 			for i in self.nightroles:
@@ -258,9 +265,7 @@ class WWgame:
 			self.sendall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
 			self.up = 0
 			self.time = 1
-				
-			if not (len(self.werewolves) < len(self.villagers) and len(self.werewolves) > 0): # Game ended during the night, we dip
-				break
+
 
 			
 			
@@ -269,6 +274,8 @@ class WWgame:
 				self.kill_player(death)
 			self.nightdeaths = []
 			self.up = 0
+			if not self.game_continues(): # Game ended during the night, we dip
+				break
 			self.sendall(utils.obj_to_json(packets.Town_Vote_Begin()))
 
 
