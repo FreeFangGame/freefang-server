@@ -25,6 +25,7 @@ class Player:
 		self.voted_by = 0 # Number of people who voted for this player
 		self.voted = False
 		self.time = 0 # 0 = Night, 1 = Day
+		self.protected = None # name of the protected player
 	def iswerewolf(self):
 		return issubclass(self.role, Werewolf) and self.alive
 			
@@ -45,7 +46,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protect": Protector.protect, "test_event": test_event}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
@@ -124,24 +125,19 @@ class WWgame:
 		# Add player to list of dead players
 		self.dead.append(player)
 		
-		
-		
-		
-		
-		
-		
-		
 
 	def handle_disconnections(self):
 		disconnected_players = [] # Track multiple disconnections at a time
 		for player in self.players:
 			try:
 				player.connection.send(b"")  # Sending empty message to check connection status
-
 			except:
 				disconnected_players.append(player)
 
 		for player in disconnected_players:
+			if player.protected:
+				player.protected = None
+
 			self.remove_player(player)
 
 		#self.update_player_count()
@@ -270,6 +266,9 @@ class WWgame:
 				break
 
 
+			for player in self.players:
+				player.protected = None
+				
 			self.eventloop()
 			
 		# The game ends if the loop above is over
