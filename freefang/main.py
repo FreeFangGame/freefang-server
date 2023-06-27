@@ -10,9 +10,7 @@ import select
 import roles
 import time
 import struct 
-
-ip = "0.0.0.0"
-port = 9999
+import argparse
 
 def parse_ruleset(ruleset):
 	ret = {}
@@ -22,7 +20,7 @@ def parse_ruleset(ruleset):
 	return ret
 	
 
-def game_creation_loop():
+def game_creation_loop(args):
 	
 	games = {}
 	# Create game object 
@@ -30,9 +28,9 @@ def game_creation_loop():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #For devs only
 	s.setblocking(0)
-	s.bind((ip, port))
+	s.bind((args.addr, args.port))
 	s.listen()
-	print(f"Listening on {ip}:{port}")
+	print(f"Listening on {args.addr}:{args.port}")
 	
 	inputs = [s]
 	outputs = []
@@ -117,7 +115,14 @@ def game_creation_loop():
 				
 def main():
 	print("Starting FreeFang server.")
-	game_creation_loop()
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-p", "--port", help="The port for the server to listen on (default: 9999)", type=int, default="9999")
+	parser.add_argument("-i", "--addr", help="The address to listen on (default: 0.0.0.0)", type=str, default="0.0.0.0")
+
+	args = parser.parse_args()
+
+	game_creation_loop(args)
+	
 	
 	
 if __name__ == "__main__":
