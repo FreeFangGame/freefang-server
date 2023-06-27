@@ -1,14 +1,14 @@
 import select, random, json, traceback, sys, datetime, time
 try:
 	from freefang.roles import *
-	import freefang.freefang_net as fn
+	import freefang.net as fn
 	import freefang.packets as packets
-	import freefang.freefang_utils as utils
+	import freefang.utils as utils
 except ImportError:
 	from roles import *
-	import freefang_net as fn
+	import net as fn
 	import packets
-	import freefang_utils as utils
+	import utils
 
 
 def test_event(headers, game, connection):

@@ -1,11 +1,11 @@
 try:
-    import freefang.freefang_net as fn
+    import freefang.net as fn
     import freefang.packets as packets
-    import freefang.freefang_utils as utils
+    import freefang.utils as utils
 except ImportError:
-    import freefang_net as fn
+    import net as fn
     import packets
-    import freefang_utils as utils
+    import utils
 	
 
 import json
