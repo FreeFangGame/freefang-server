@@ -88,7 +88,7 @@ class Werewolf(Role):
 		
 		target = game.getplayerbyname(headers.target)
 
-		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive:
+		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive and headers.sender.alive:
 			if target == headers.sender.protected:
 				return 3  # protected player case (3)
 			vt = WerewolfVote(headers.target, headers.sender)
@@ -128,7 +128,7 @@ class Seer:
 	def reveal(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
 		# Check if the player is actually a seer, if the role currently woken up is seer, and if the target is alive
-		if game.up == Seer and headers.sender.role == Seer and target.alive:
+		if game.up == Seer and headers.sender.role == Seer and target.alive and headers.sender.alive:
 			# Create packet
 			packet = packets.SeerReveal(target.role.__name__, target.name)
 			# Send packet containing the desired info to the seer
