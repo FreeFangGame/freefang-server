@@ -232,13 +232,7 @@ class WWgame:
 					continue
 			
 			for i in exceptional:  
-				self.inputs.remove(i)
-				self.outputs.remove(i)
-				for x in self.players:
-					if x.connection == i:
-						print(f"{x.name} has left the game")
-						self.players.remove(x)
-				i.close()
+				self.remove_player(i)
 	
 		
 	def gameloop(self):
