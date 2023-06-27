@@ -89,10 +89,19 @@ class WWgame:
 		num_players = len(self.players)
 		print(f"Number of present players: {num_players}")
 	
-	def remove_player(self, player):
+	def remove_player(self, i):
+		self.inputs.remove(i)
+		self.outputs.remove(i)
+		player = self.connections[i]
 		self.players.remove(player)
-		self.inputs.remove(player.connection)
-		self.outputs.remove(player.connection)
+		if player in self.villagers:
+			self.villagers.remove(player)
+		else:
+			self.werewolves.remove(player)
+		for spl in self.players:
+			fn.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
+
+						
 		print(f"{player.name} disconnected")
 		
 	
@@ -138,20 +147,13 @@ class WWgame:
 		
 
 	def handle_disconnections(self):
-		disconnected_players = [] # Track multiple disconnections at a time
 		for player in self.players:
 			try:
-				player.connection.send(b"")  # Sending empty message to check connection status
+				fn.send_packet("", player.connection)  # Sending empty message to check connection status
 			except:
-				disconnected_players.append(player)
+				self.remove_player(player.connection)
+	
 
-		for player in disconnected_players:
-			if player.protected:
-				player.protected = None
-
-			self.remove_player(player)
-
-		#self.update_player_count()
 
 		
 	def isnight(self):
@@ -184,7 +186,6 @@ class WWgame:
 		end = None
 		while not end: # This loop will eventually be broken, can be while true.
 			time.sleep(0.05)
-			self.handle_disconnections()
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 			for i in read: # Check every connection that has sent a message
@@ -192,7 +193,7 @@ class WWgame:
 						
 					packet = fn.read_packet(i)
 					if not packet:
-						net.send_packet("", i)
+						fn.send_packet("", i)
 
 						continue
 
@@ -216,18 +217,7 @@ class WWgame:
 						traceback.print_exc()
 						fn.send_failure(i, error=None)
 				except:
-					self.inputs.remove(i)
-					self.outputs.remove(i)
-					player = self.connections[i]
-					self.players.remove(player)
-					if player in self.villagers:
-						self.villagers.remove(player)
-					else:
-						self.werewolves.remove(player)
-					for spl in self.players:
-						fn.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
-
-						
+					self.remove_player(i)
 					
 
 
