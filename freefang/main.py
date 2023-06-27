@@ -109,6 +109,10 @@ def game_creation_loop(args):
 									outputs.remove(i.connection)
 								del games[packet.headers.gameid]
 								thread.start()
+					elif packet.action == "pre_game_message":
+						sender = connections[i]
+						for spl in sender.game.players:
+							net.send_message(sender.name, packet.headers.message, spl.connection)
 								
 				except Exception as e:
 					print(e)
