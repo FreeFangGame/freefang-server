@@ -1,13 +1,13 @@
 import socket
 import json 
-import models
-import freefang_utils as utils
-import freefang_net as net
-import packets
+import freefang.models as models
+import freefang.freefang_utils as utils
+import freefang.freefang_net as net
+import freefang.packets as packets
 import uuid
 import threading
 import select
-import roles
+import freefang.roles as roles
 import time
 import struct 
 import argparse
