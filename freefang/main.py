@@ -11,6 +11,9 @@ import roles
 import time
 import struct 
 
+ip = "0.0.0.0"
+port = 9999
+
 def parse_ruleset(ruleset):
 	ret = {}
 	for key, value in ruleset.__dict__.items():
@@ -27,8 +30,9 @@ def game_creation_loop():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #For devs only
 	s.setblocking(0)
-	s.bind(("0.0.0.0", 9999))
+	s.bind((ip, port))
 	s.listen()
+	print(f"Listening on {ip}:{port}")
 	
 	inputs = [s]
 	outputs = []
