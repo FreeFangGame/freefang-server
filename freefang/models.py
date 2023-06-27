@@ -47,6 +47,14 @@ class WWgame:
 		self.connections = {} # Dictionnary associating connections to players
 
 		self.roles = {} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
+	
+	# This function is a shortcut to send a packet and remove the player if the connection is dead
+	def send_packet(self, packet, con):
+		try:
+			fn.send_packet(packet, con)
+		except (BrokenPipeError, ConnectionResetError):
+			self.remove_player(con)
+		
 	def distribute_roles(self):
 		noroles = [i for i in self.players] # Get all the players and keep track of those with no roles
 		print("Distributing roles to players")
@@ -167,11 +175,11 @@ class WWgame:
 	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
 		for i in self.players:
-			fn.send_packet(string,i.connection)
+			self.send_packet(string, i.connection)
 			
 	def sendwerewolves(self, string):
 		for i in self.werewolves:
-			fn.send_packet(string,i.connection)
+			self.send_packet(string,i.connection)
 			
 
 	def getplayerbyname(self, name):
@@ -219,8 +227,7 @@ class WWgame:
 			for i in write:
 				if self.msgqueues.get(i): # If a message is pending for a player send it to them
 					for x in self.msgqueues[i]:
-						
-						fn.send_packet(x, i)
+						self.send_packet(x, i)
 					del self.msgqueues[i] # No more message needed to send
 					
 				else:

@@ -132,7 +132,7 @@ class Seer:
 			# Create packet
 			packet = packets.SeerReveal(target.role.__name__, target.name)
 			# Send packet containing the desired info to the seer
-			fn.send_packet(utils.obj_to_json(packet), connection)
+			game.send_packet(utils.obj_to_json(packet), connection)
 			return 2
 		return 1
 		

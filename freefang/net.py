@@ -18,9 +18,9 @@ def readlength(con): # Read the length of the packet prepended to it
 		return None
 			
 def read_packet(con):
-    length = readlength(con)
-    if not length:
-        return None
+	length = readlength(con)
+	if not length:
+		return None
 	return con.recv(length).decode()
 
 def send_packet(packet, con):
