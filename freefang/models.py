@@ -72,16 +72,14 @@ class WWgame:
 				noroles.pop(index)
 				
 	def townmessage(self, headers, game, connection):
-		msg = packets.ChatMessage(headers.sender.name, headers.message, str(datetime.datetime.now())) # Create message packet
-		packet = utils.obj_to_json(msg)
+
 		for i in self.players:
-			fn.send_packet(packet, i.connection) # Send it to all players
+			fn.send_message(headers.sender.name, headers.message, i.connection) # Send it to all players
 	
 	def werewolfmessage(self, headers, game, connection):
-		msg = packets.ChatMessage(headers.sender.name, headers.message, str(datetime.datetime.now())) # Create message packet
-		packet = utils.obj_to_json(msg)
+
 		for i in self.werewolves:
-			fn.send_packet(packet, i.connection) # Send it to all werewolves
+			fn.send_message(headers.sender.name, headers.message, i.connection) # Send it to all werewolves
 		
 		
 			
@@ -96,7 +94,7 @@ class WWgame:
 		self.players.remove(player)
 		if player in self.villagers:
 			self.villagers.remove(player)
-		else:
+		elif player in self.werewolves:
 			self.werewolves.remove(player)
 		for spl in self.players:
 			fn.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
