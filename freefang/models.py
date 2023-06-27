@@ -104,8 +104,6 @@ class WWgame:
 		
 		
 	def kill_player(self, player, reason=None):
-		# TODO: Maybe add a list to keep track of players that are alive, also add a list of death that happen during each night
-		# to notify the players when day rises 
 		
 		# If the player is protected we do nothing. 
 		if player.protected:
