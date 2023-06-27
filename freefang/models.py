@@ -11,11 +11,6 @@ except ImportError:
 	import utils
 
 
-def test_event(headers, game, connection):
-	print("WE'RE COOKING!!")
-	print(headers.target)
-	print(headers.sender.name)
-	return 0
 class Player:
 	def __init__(self):
 		self.role = None
@@ -47,7 +42,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
