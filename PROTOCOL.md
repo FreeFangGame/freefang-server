@@ -139,7 +139,19 @@ Sent by the hunter once he is killed, he is allowed to kill anyone in the game.
 }
 ```
 
+### protector_protect
+Sent by the protector on wake up to protect a player for the night
 
+Sent by the hunter once he is killed, he is allowed to kill anyone in the game.
+
+```json
+{
+  "action": "protector_protect",
+  "headers": {
+    "target": "Hank"
+  }
+}
+```
 
 
 
