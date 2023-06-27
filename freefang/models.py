@@ -188,30 +188,46 @@ class WWgame:
 
 			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
 			for i in read: # Check every connection that has sent a message
-				packet = fn.read_packet(i)
-				if not packet:
-					continue
-
 				try:
-					pckt = utils.json_to_object(packet) # Create an object from the packet
-					print(pckt.action)
-					setattr(pckt.headers, "sender", self.connections[i]) # Add the packet's sender to the object to use it in the event function
-					ret = self.action_to_function[pckt.action](pckt.headers, self, i) # Call an event function depending on the packet's action
-					if not ret: 
-						fn.send_success(i)
-					elif ret == 2: # End our loop and go to the next role
-						fn.send_success(i)
 						
-						# Set end to true to end the loop after message sending is done, then break as no more packets are needed
-						end = True
-						break
-					else: # If 1 is returned then something went wrong, the packet is probably bad (for example voting someone who doesnt exist)
-						raise Exception
-				except Exception as e:
-					traceback.print_exc()
-					fn.send_failure(i, error=None)
+					packet = fn.read_packet(i)
+					if not packet:
+						net.send_packet("", i)
 
-					
+						continue
+
+					try:
+						pckt = utils.json_to_object(packet) # Create an object from the packet
+						print(pckt.action)
+						setattr(pckt.headers, "sender", self.connections[i]) # Add the packet's sender to the object to use it in the event function
+						ret = self.action_to_function[pckt.action](pckt.headers, self, i) # Call an event function depending on the packet's action
+						if not ret: 
+							fn.send_success(i)
+						elif ret == 2: # End our loop and go to the next role
+							fn.send_success(i)
+							
+							# Set end to true to end the loop after message sending is done, then break as no more packets are needed
+							end = True
+							break
+						else: # If 1 is returned then something went wrong, the packet is probably bad (for example voting someone who doesnt exist)
+							fn.send_failure(i, error=None)
+							pass
+					except Exception as e:
+						traceback.print_exc()
+						fn.send_failure(i, error=None)
+				except:
+					self.inputs.remove(i)
+					self.outputs.remove(i)
+					player = self.connections[i]
+					self.players.remove(player)
+					if player in self.villagers:
+						self.villagers.remove(player)
+					else:
+						self.werewolves.remove(player)
+					for spl in self.players:
+						fn.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
+
+						
 					
 
 
