@@ -47,7 +47,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protect": Protector.protect, "test_event": test_event}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "test_event": test_event}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
@@ -111,6 +111,10 @@ class WWgame:
 	def kill_player(self, player, reason=None):
 		# TODO: Maybe add a list to keep track of players that are alive, also add a list of death that happen during each night
 		# to notify the players when day rises 
+		
+		# If the player is protected we do nothing. 
+		if player.protected:
+			return 1
 		print(player.name + " died")
 		player.alive = False
 
@@ -119,7 +123,7 @@ class WWgame:
 		# Otherwise we just send the packet right away
 		if self.up != 0 and self.up != Hunter:
 			self.nightdeaths.append(player)
-			return
+			return 0
 			
 		
 		# Notify everyone that player died
@@ -266,6 +270,9 @@ class WWgame:
 				self.up = i
 				self.eventloop()
 			
+			# Remove all protections 
+			for player in self.players:
+				player.protected = None
 			self.sendall(utils.obj_to_json(packets.Time_change(time="day"))) # Notify everyone day has risen
 			self.up = 0
 			self.time = 1
@@ -283,9 +290,7 @@ class WWgame:
 			self.sendall(utils.obj_to_json(packets.Town_Vote_Begin()))
 
 
-			for player in self.players:
-				player.protected = None
-				
+
 			self.eventloop()
 			
 		# The game ends if the loop above is over

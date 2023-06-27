@@ -159,8 +159,8 @@ class Protector(Role):
 		target = game.getplayerbyname(headers.target)
     
 		# if both protector and target are alive, modify the headers
-		if headers.sender.alive and target.alive:
-			headers.sender.protected = target
+		if headers.sender.alive and target.alive and game.up == Protector:
+			target.protected = True
 			return 2
 		return 1
 
