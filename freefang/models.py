@@ -47,6 +47,9 @@ class WWgame:
 		self.connections = {} # Dictionnary associating connections to players
 
 		self.roles = {} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
+		
+		self.town_voting_scheme = "absmaj"
+		self.werewolf_voting_scheme = "relmaj"
 	
 	# This function is a shortcut to send a packet and remove the player if the connection is dead
 	def send_packet(self, packet, con):

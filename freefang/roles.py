@@ -2,10 +2,12 @@ try:
     import freefang.net as fn
     import freefang.packets as packets
     import freefang.utils as utils
+    import freefang.voting as voting
 except ImportError:
     import net as fn
     import packets
     import utils
+    import voting
 	
 
 import json
@@ -48,26 +50,13 @@ class Villager(Role):
 
 			event = packets.Town_vote(target=headers.target, sender=headers.sender.name) # Create a packet indicating a person was voted
 			pckt = utils.obj_to_json(event) # Serialize it to json
-			game.queueall(pckt) # Send it to everyone
+			game.sendall(pckt) # Send it to everyone
 			
 			if len(game.votes) == len(game.alive): # Everyone voted
-				votes = {}
-				
-				# Gather all votes in a dictionary along with their target
-				for i in game.votes:
-					votes.setdefault(i.target, 0)
-					votes[i.target] += 1
-				
-				# Get the highest number of votes on a player
-				maxvotes = max(votes.values())
-				
-				# Check if that player is tied with another for the amount of votes he was targeted by
-				ties = [key for key, value in votes.items() if value == maxvotes]
-				
-				for i in game.players:
-					i.voted = False # Set all players like they havent voted yet
-				game.votes = []
-				game.kill_player(ties[0])
+				if game.town_voting_scheme == "relmaj":
+					voting.relmaj(game)
+				elif game.town_voting_scheme == "absmaj":
+					voting.absmaj(game)
 				return 2
 
 				
@@ -91,28 +80,24 @@ class Werewolf(Role):
 		if game.up == Werewolf and headers.sender.iswerewolf() and headers.sender.voted == False and target.alive and headers.sender.alive:
 			if target == headers.sender.protected:
 				return 3  # protected player case (3)
-			vt = WerewolfVote(headers.target, headers.sender)
+			vt = WerewolfVote(target, headers.sender)
 			game.votes.append(vt)
 			headers.sender.voted = True
 			event = packets.Werewolf_vote(target=headers.target, sender=headers.sender.name) # Create a packet indicating a person was voted
 			pckt = utils.obj_to_json(event) # Serialize it to json
-			game.queuewerewolves(pckt) # Send it to all werewolves
+			game.sendwerewolves(pckt) # Send it to all werewolves
 
 			if len(game.votes) == len(game.werewolves): # All the werewolves voted
-				unanimity = all(i.target == game.votes[0].target for i in game.votes) 
-				if not unanimity: # Check if werewolves voted unanimously
-					# Wolves fucked up, no kill for them
-					pass
-				else:
-					# Kill the player that was unanimously voted
-					kill = game.getplayerbyname(headers.target)
-					game.kill_player(kill)
-				# Make all werewolves able to vote again
+				if game.werewolf_voting_scheme == "unanimity":
+					voting.unanimity(game)
+				elif game.werewolf_voting_scheme == "relmaj":
+					voting.relmaj(game)
+				elif game.werewolf_voting_scheme == "absmaj":
+					voting.absmaj(game)
 				for i in game.werewolves:
 					i.voted = False
-				# Reset game.votes
-				game.votes = []
 				return 2
+
 					
 				 
 			return 0

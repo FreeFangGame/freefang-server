@@ -30,12 +30,22 @@ Licensed under AGPLv3.0
 Source code at https://github.com/FreeFangGame/freefang-server
 """
 
-def parse_ruleset(ruleset):
+def parse_ruleset(ruleset, game):
+	if ruleset.town_voting_scheme:
+		game.town_voting_scheme = ruleset.town_voting_scheme.strip()
+		delattr(ruleset, "town_voting_scheme")
+	if ruleset.werewolf_voting_scheme:
+		game.werewolf_voting_scheme = ruleset.werewolf_voting_scheme.strip()
+		delattr(ruleset, "werewolf_voting_scheme")
+		
+	print(game.town_voting_scheme)
+	print(game.werewolf_voting_scheme)
+	
+		
 	ret = {}
 	for key, value in ruleset.__dict__.items():
 		ret[getattr(roles, key)] = value
-
-	return ret
+	game.roles = ret
 	
 
 def game_creation_loop(args):
@@ -95,7 +105,7 @@ def game_creation_loop(args):
 						gameid = str(uuid.uuid4())
 						game = models.WWgame()
 						game.playercap = packet.headers.playercap
-						game.roles = parse_ruleset(packet.headers.ruleset)
+						parse_ruleset(packet.headers.ruleset, game)
 	
 						for rl in game.roles: 
 							if rl.nightrole:
