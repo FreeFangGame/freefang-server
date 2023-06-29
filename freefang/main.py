@@ -20,7 +20,6 @@ import select
 import time
 import struct 
 import argparse
-import traceback
 import ssl
 import os
 
