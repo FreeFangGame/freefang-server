@@ -23,7 +23,12 @@ import argparse
 import ssl
 import os
 
-
+VERSIONSTR = """
+FreeFang Server 0.1.1
+Written by @Solirs and @lukakralik
+Licensed under AGPLv3.0
+Source code at https://github.com/FreeFangGame/freefang-server
+"""
 
 def parse_ruleset(ruleset):
 	ret = {}
@@ -144,16 +149,22 @@ def game_creation_loop(args):
 						
 				
 def main():
-	print("Starting FreeFang server.")
 	parser = argparse.ArgumentParser()
+	parser.add_argument("-v", "--version", help="Show version", action="store_true")
+
 	parser.add_argument("-p", "--port", help="The port for the server to listen on (default: 9999)", type=int, default="9999")
 	parser.add_argument("-i", "--addr", help="The address to listen on (default: 0.0.0.0)", type=str, default="0.0.0.0")
 
 	parser.add_argument("-c", "--cert", help="SSL certificate if you choose to use SSL.", type=os.path.abspath, default=None)
 	parser.add_argument("-k", "--key", help="SSL key if you choose to use SSL.", type=os.path.abspath, default=None)
-
-
 	args = parser.parse_args()
+	
+	if args.version:
+		print(VERSIONSTR)
+		return
+
+	print("Starting FreeFang server.")
+
 
 	game_creation_loop(args)
 	
