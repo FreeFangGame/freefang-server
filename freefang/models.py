@@ -56,23 +56,25 @@ class WWgame:
 			self.remove_player(con)
 		
 	def distribute_roles(self):
-		noroles = [i for i in self.players] # Get all the players and keep track of those with no roles
+	# Get all the players and keep track of those with no roles
 		print("Distributing roles to players")
 		
 		# Randomly give each role to the number of players its supposed to be on, 
-		for i, x in self.roles.items(): 
-			for _ in range(x): 
-				index = random.randint(0, len(noroles) - 1)
-				noroles[index].role = i # Give that role to a random player and remove him from that list
-				fn.send_packet(utils.obj_to_json(packets.Role_attributed(role=i.__name__)), noroles[index].connection)
-				print(f"Player {noroles[index].name} got role {i.__name__}") 
-
-				if noroles[index].iswerewolf():
-					self.werewolves.append(noroles[index])
-				else:
-					self.villagers.append(noroles[index])
-				
-				noroles.pop(index)
+		for spl in self.players:
+			playerrole, _ = random.choice(list(self.roles.items()))
+			self.roles[playerrole] -= 1
+			if self.roles[playerrole] == 0:
+				del self.roles[playerrole]
+			
+			spl.role = playerrole
+			fn.send_packet(utils.obj_to_json(packets.Role_attributed(role=playerrole.__name__)), spl.connection)
+			print(f"Player {spl.name} got role {playerrole.__name__}") 
+			
+			if spl.iswerewolf():
+				self.werewolves.append(spl)
+			else:
+				self.villagers.append(spl)
+			
 				
 	def townmessage(self, headers, game, connection):
 
