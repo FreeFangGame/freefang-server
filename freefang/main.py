@@ -37,9 +37,6 @@ def parse_ruleset(ruleset, game):
 	if ruleset.werewolf_voting_scheme:
 		game.werewolf_voting_scheme = ruleset.werewolf_voting_scheme.strip()
 		delattr(ruleset, "werewolf_voting_scheme")
-		
-	print(game.town_voting_scheme)
-	print(game.werewolf_voting_scheme)
 	
 		
 	ret = {}
