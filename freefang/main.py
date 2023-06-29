@@ -20,6 +20,10 @@ import select
 import time
 import struct 
 import argparse
+import ssl
+import os
+
+
 
 def parse_ruleset(ruleset):
 	ret = {}
@@ -34,11 +38,17 @@ def game_creation_loop(args):
 	games = {}
 	# Create game object 
 
+		
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #For devs only
 	s.setblocking(0)
 	s.bind((args.addr, args.port))
 	s.listen()
+	if args.cert and args.key:
+		print("SSL is ENABLED.")
+		context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+		context.load_cert_chain(args.cert, args.key)
+		s = context.wrap_socket(s, server_side=True)
 	print(f"Listening on {args.addr}:{args.port}")
 	
 	inputs = [s]
@@ -54,12 +64,19 @@ def game_creation_loop(args):
 		for i in read:
 			if i is s:
 				print("New connection")
-				con, addr = s.accept() # Accept new connection
-				con.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
-				inputs.append(con) 
-				outputs.append(con)
-				connections[con] = 0
-				con.setblocking(0)
+				try:
+					con, addr = s.accept() # Accept new connection
+					con.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
+					inputs.append(con) 
+					outputs.append(con)
+					connections[con] = 0
+					con.setblocking(0)
+					
+				except ssl.SSLError: 
+					# SSL related errors may be thrown but they should not be fatal.
+					pass
+					 
+
 			else:
 				try:
 					packet = net.read_packet(i)
@@ -131,6 +148,10 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-p", "--port", help="The port for the server to listen on (default: 9999)", type=int, default="9999")
 	parser.add_argument("-i", "--addr", help="The address to listen on (default: 0.0.0.0)", type=str, default="0.0.0.0")
+
+	parser.add_argument("-c", "--cert", help="SSL certificate if you choose to use SSL.", type=os.path.abspath, default=None)
+	parser.add_argument("-k", "--key", help="SSL key if you choose to use SSL.", type=os.path.abspath, default=None)
+
 
 	args = parser.parse_args()
 

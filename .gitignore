@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# SSL certs for testing
+
+*.pem
+*.crt
+*.key
+
+
 # C extensions
 *.so
 
