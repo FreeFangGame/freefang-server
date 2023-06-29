@@ -20,6 +20,7 @@ import select
 import time
 import struct 
 import argparse
+import traceback
 import ssl
 import os
 
@@ -64,7 +65,6 @@ def game_creation_loop(args):
 		for i in read:
 			if i is s:
 				print("New connection")
-				con = 0
 				try:
 					con, addr = s.accept() # Accept new connection
 					con.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
@@ -73,8 +73,9 @@ def game_creation_loop(args):
 					connections[con] = 0
 					con.setblocking(0)
 					
-				except ssl.SSLError: # For when SSL is enabled
-					print("Bad SSL") 
+				except ssl.SSLError: 
+					# SSL related errors may be thrown but they should not be fatal.
+					pass
 					 
 
 			else:
