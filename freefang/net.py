@@ -3,10 +3,11 @@ import struct
 try:
 	import freefang.utils as utils
 	import freefang.packets as packets
-except:
+	
+except ImportError:
 	import packets
 	import utils
-	
+
 
 def readlength(con): # Read the length of the packet prepended to it
 

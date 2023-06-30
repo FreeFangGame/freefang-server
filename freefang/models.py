@@ -1,14 +1,15 @@
 import select, random, json, traceback, sys, datetime, time
 try:
-	from freefang.roles import *
-	import freefang.net as fn
-	import freefang.packets as packets
-	import freefang.utils as utils
-except ImportError:
 	from roles import *
 	import net as fn
 	import packets
 	import utils
+
+except ImportError:
+	from freefang.roles import *
+	import freefang.net as fn
+	import freefang.packets as packets
+	import freefang.utils as utils
 
 
 class Player:

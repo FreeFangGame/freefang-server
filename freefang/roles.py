@@ -1,13 +1,14 @@
 try:
-    import freefang.net as fn
-    import freefang.packets as packets
-    import freefang.utils as utils
-    import freefang.voting as voting
-except ImportError:
     import net as fn
     import packets
     import utils
     import voting
+except ImportError:
+
+    import freefang.net as fn
+    import freefang.packets as packets
+    import freefang.utils as utils
+    import freefang.voting as voting
 	
 
 import json
