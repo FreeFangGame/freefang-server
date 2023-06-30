@@ -14,7 +14,7 @@ This game is about social deduction, lying, persuasion, finding and using clues,
 
 - Full werewolf experience with quite a few roles to pick from.  
 - No moderator needed, the server takes care of everything from role attribution to voting to role actions.  
-- Create a custom ruleset on game creation with only the roles you want.  
+- Create a custom ruleset on game creation with only the roles you want and more custom options!.  
 - No signup, enter a server, game id, pick a name and you're good.  
 - Selfhostable, git clone, run freefang/main.py, done. No dependencies. Very simple to get started with.
 
