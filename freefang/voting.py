@@ -5,7 +5,7 @@ The schemes are absolute majority, relative majority, and unanimity.
 
 def unanimity(game):
 	unanimity = all(i.target == game.votes[0].target for i in game.votes) 
-	if not unanimity: # Check if werewolves voted unanimously
+	if not unanimity: # Check if everyone voted unanimously
 		# No kill if unanimity is not achieved
 		return 1
 	else:
