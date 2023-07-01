@@ -1,18 +1,19 @@
 import socket
 import json 
 try:
+	import freefang.models as models
+	import freefang.utils as utils
+	import freefang.net as net
+	import freefang.packets as packets
+	import freefang.roles as roles
+
+except ImportError:
 	import models
 	import utils
 	import net
 	import packets
 	import roles
 
-except ImportError:
-	import freefang.models as models
-	import freefang.utils as utils
-	import freefang.net as net
-	import freefang.packets as packets
-	import freefang.roles as roles
 
 import uuid
 import threading
