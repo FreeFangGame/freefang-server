@@ -24,7 +24,7 @@ For all the options available run `freefang-server -h`
 - No moderator needed, the server takes care of everything from role attribution to voting to role actions.  
 - Create a custom ruleset on game creation with only the roles you want and more custom options!.  
 - No signup, enter a server, game id, pick a name and you're good.  
-- Selfhostable, git clone, run freefang/main.py, done. No dependencies. Very simple to get started with.
+- Selfhostable, very simple to get started with.
 
 
 # Clients
