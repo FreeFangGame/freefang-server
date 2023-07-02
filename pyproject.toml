@@ -7,7 +7,7 @@ name  = "freefang-server"
 version = "0.2.1"
 authors = [
   { name="Solaris", email="iusegentoobtw@protonmail.com" },
-  { name="lukakralik", email=null}
+  { name="lukakralik", email="luka.kralik@gmail.com"}
 ]
 description = "The server for FreeFang, a libre python implementation of Werewolf (also known as Mafia)"
 readme = "README.md"
