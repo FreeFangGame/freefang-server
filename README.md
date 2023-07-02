@@ -11,7 +11,7 @@ During the day the town (with the werewolves hidden among them) vote to kill one
 This game is about social deduction, lying, persuasion, finding and using clues, etc.
 
 # Getting started
-The FreeFang server is available on pypi as `freefang-server.  
+The FreeFang server is available on pypi as `freefang-server`.  
 To get started with hosting simply run  
 
 `python -m pip install freefang-server`  
