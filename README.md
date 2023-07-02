@@ -10,6 +10,12 @@ During the day the town (with the werewolves hidden among them) vote to kill one
 
 This game is about social deduction, lying, persuasion, finding and using clues, etc.
 
+# Getting started
+The FreeFang server is available on pypi as `freefang-server`.
+
+`python -m pip install freefang-server`
+`freefang-server`
+
 # Features
 
 - Full werewolf experience with quite a few roles to pick from.  
@@ -23,7 +29,6 @@ This game is about social deduction, lying, persuasion, finding and using clues,
 
 [freefang-qt](https://github.com/FreeFangGame/freefang-qt) is the reference client written by the devs.
 You are free to write your own and PR to have it added here, full protocol documentation is coming.
-
 
 
 # Protocol documentation
