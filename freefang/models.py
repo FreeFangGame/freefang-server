@@ -129,7 +129,6 @@ class WWgame:
 		if player.protected:
 			return 1
 		print(player.name + " died")
-		player.alive = False
 
 		
 		# If the player died during the night we keep it in a list to notify the other players when the day rises
@@ -137,7 +136,8 @@ class WWgame:
 		if self.up != 0 and self.up != Hunter:
 			self.nightdeaths.append(player)
 			return 0
-			
+		player.alive = False
+
 		
 		# Notify everyone that player died
 		event = packets.Player_death(name=player.name, role=player.role.__name__, reason=reason)

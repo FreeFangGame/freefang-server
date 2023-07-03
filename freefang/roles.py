@@ -177,7 +177,8 @@ class Witch(Role):
 			return 1
 	@staticmethod
 	def onwakeup(game):
-		event = utils.obj_to_json(packets.Witch_send_dead(game.nightdeaths))
+		dead = [i.name for i in game.nightdeaths]
+		event = utils.obj_to_json(packets.Witch_send_dead(dead))
 		game.sendrole(event, Witch)
 
 class Vote:
