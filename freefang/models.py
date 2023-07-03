@@ -11,6 +11,7 @@ except ImportError:
 	import net as fn
 	import packets
 	import utils
+	
 
 
 class Player:
@@ -24,6 +25,10 @@ class Player:
 		self.time = 0 # 0 = Night, 1 = Day
 		self.protected = None # name of the protected player
 		self.game = None
+
+		#Witch stuff
+		self.haskilled = 0
+		self.hasrevived = 0
 	def iswerewolf(self):
 		return issubclass(self.role, Werewolf) and self.alive
 			
@@ -44,7 +49,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "witch_kill": Witch.kill, "witch_revive": Witch.revive}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 
@@ -124,7 +129,6 @@ class WWgame:
 		if player.protected:
 			return 1
 		print(player.name + " died")
-		player.alive = False
 
 		
 		# If the player died during the night we keep it in a list to notify the other players when the day rises
@@ -132,7 +136,8 @@ class WWgame:
 		if self.up != 0 and self.up != Hunter:
 			self.nightdeaths.append(player)
 			return 0
-			
+		player.alive = False
+
 		
 		# Notify everyone that player died
 		event = packets.Player_death(name=player.name, role=player.role.__name__, reason=reason)
@@ -178,6 +183,7 @@ class WWgame:
 		for i in self.werewolves:				
 			self.msgqueues.setdefault(i.connection, [])
 			self.msgqueues[i.connection].append(string)
+
 				
 	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
@@ -187,7 +193,11 @@ class WWgame:
 	def sendwerewolves(self, string):
 		for i in self.werewolves:
 			self.send_packet(string,i.connection)
-			
+	def sendrole(self, string, role):
+		for i in self.alive:
+			if i.role == role:
+				self.send_packet(string, i.connection)
+				
 
 	def getplayerbyname(self, name):
 		return [i for i in self.players if i.name == name][0]
@@ -275,6 +285,11 @@ class WWgame:
 			for i in self.nightroles:
 				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 				self.up = i
+				# Run the role's wake up event function
+				try:
+					i.onwakeup(self)
+				except:
+					pass
 				self.eventloop()
 			
 			# Remove all protections 

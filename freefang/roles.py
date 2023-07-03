@@ -150,6 +150,37 @@ class Protector(Role):
 			return 2
 		return 1
 
+# The witch can kill and revive one player per game who died during the night.
+# She is supposed to wake up last as she can only revive people who died during each night she wakes up in
+class Witch(Role):
+	nightrole = 1
+	order = 4
+	@staticmethod
+	def kill(headers, game, connection):
+		target = game.getplayerbyname(headers.target)
+		if game.up == Witch and headers.sender.role == Witch and not headers.sender.haskilled and target.alive:
+			game.kill_player(target)
+			headers.sender.haskilled = 1
+			return 2
+		else:
+			return 1
+	@staticmethod
+	def revive(headers, game, connection):
+		target = game.getplayerbyname(headers.target)
+		if game.up == Witch and headers.sender.role == Witch and not headers.sender.hasrevived and target in game.nightdeaths:
+			# The witch can only save people who died during the night she wakes up, therefore removing them
+			# from the nightdeaths list is what we want
+			game.nightdeaths.remove(target)
+			headers.sender.hasrevived = 1
+			return 2
+		else:
+			return 1
+	@staticmethod
+	def onwakeup(game):
+		dead = [i.name for i in game.nightdeaths]
+		event = utils.obj_to_json(packets.Witch_send_dead(dead))
+		game.sendrole(event, Witch)
+
 class Vote:
     def __init__(self, target, sender):
         self.sender = sender

@@ -127,4 +127,10 @@ class Check_alive:
 	def __init__(self):
 		self.action = "check_alive"
 	
-
+# This packet is supposed to be sent to the witch upon wakeup to
+# Notify them of the players which have died during the night
+class Witch_send_dead:
+	def __init__(self, players):
+		self.action = "witch_send_dead"
+		self.dead = players
+	
