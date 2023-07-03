@@ -11,6 +11,7 @@ except ImportError:
 	import net as fn
 	import packets
 	import utils
+	
 
 
 class Player:
@@ -24,6 +25,10 @@ class Player:
 		self.time = 0 # 0 = Night, 1 = Day
 		self.protected = None # name of the protected player
 		self.game = None
+
+		#Witch stuff
+		self.haskilled = 0
+		self.hasrevived = 0
 	def iswerewolf(self):
 		return issubclass(self.role, Werewolf) and self.alive
 			
