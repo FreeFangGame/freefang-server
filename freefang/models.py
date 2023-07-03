@@ -46,6 +46,8 @@ class WWgame:
 		self.socket = 0
 		self.inputs = []
 		self.outputs = []
+		self.read = []
+		self.write = []
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
@@ -105,6 +107,8 @@ class WWgame:
 	def remove_player(self, i):
 		self.inputs.remove(i)
 		self.outputs.remove(i)
+		self.read.remove(i)
+		self.write.remove(i)
 		player = self.connections[i]
 		self.players.remove(player)
 		if player in self.villagers:
@@ -112,7 +116,7 @@ class WWgame:
 		elif player in self.werewolves:
 			self.werewolves.remove(player)
 		for spl in self.players:
-			fn.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
+			self.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
 
 						
 		print(f"{player.name} disconnected")
@@ -204,11 +208,11 @@ class WWgame:
 		
 	def eventloop(self): 
 		end = None
-		while not end: # This loop will eventually be broken, can be while true.
+		while not end and len(self.players) > 1: # This loop will eventually be broken, can be while true.
 			time.sleep(0.05)
 
-			read, write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
-			for i in read: # Check every connection that has sent a message
+			self.read, self.write, exceptional = select.select(self.inputs, self.outputs, self.inputs)
+			for i in self.read: # Check every connection that has sent a message
 				try:
 						
 					packet = fn.read_packet(i)
@@ -241,7 +245,7 @@ class WWgame:
 					
 
 
-			for i in write:
+			for i in self.write:
 				if self.msgqueues.get(i): # If a message is pending for a player send it to them
 					for x in self.msgqueues[i]:
 						self.send_packet(x, i)

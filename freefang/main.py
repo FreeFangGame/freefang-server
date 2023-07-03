@@ -69,6 +69,8 @@ def game_creation_loop(args):
 	
 	connections = {} # Associating connections to players
 	
+	write = 0
+	read = 0
 	
 	while True:
 		time.sleep(0.05)
@@ -148,11 +150,16 @@ def game_creation_loop(args):
 					print(e)
 					inputs.remove(i)
 					outputs.remove(i)
+					read.remove(i)
+					write.remove(i)
 					player = connections[i]
 					if player:
 						player.game.players.remove(player)
 						for spl in player.game.players:
-							net.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
+							try:
+								net.send_packet(utils.obj_to_json(packets.Player_leave(username=player.name)), spl.connection)
+							except:
+								continue
 					del connections[i]
 						
 				
