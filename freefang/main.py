@@ -25,7 +25,7 @@ import ssl
 import os
 
 VERSIONSTR = """
-FreeFang Server 0.2.1
+FreeFang Server 0.3.0
 Written by @Solirs and @lukakralik
 Licensed under AGPLv3.0
 Source code at https://github.com/FreeFangGame/freefang-server
