@@ -122,6 +122,10 @@ def game_creation_loop(args):
 							net.send_packet(utils.obj_to_json(packets.Action_failure(error="game_not_found")), i)
 						else:
 							game = games[packet.headers.gameid]
+
+							if packet.headers.name in [s.name for s in game.players]:
+								net.send_failure(i, "name_already_taken")
+								continue
 								
 							p = models.Player()
 							p.name = packet.headers.name
