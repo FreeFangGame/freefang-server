@@ -175,8 +175,10 @@ class Witch(Role):
 			return 2
 		else:
 			return 1
-
-
+	@staticmethod
+	def onwakeup(game):
+		event = utils.obj_to_json(packets.Witch_send_dead(game.nightdeaths))
+		game.sendrole(event, Witch)
 
 class Vote:
     def __init__(self, target, sender):

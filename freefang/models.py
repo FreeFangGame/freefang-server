@@ -183,6 +183,7 @@ class WWgame:
 		for i in self.werewolves:				
 			self.msgqueues.setdefault(i.connection, [])
 			self.msgqueues[i.connection].append(string)
+
 				
 	# Those two functions instantly send a packet to their destined targets, either all players or all werewolves
 	def sendall(self, string):
@@ -192,7 +193,11 @@ class WWgame:
 	def sendwerewolves(self, string):
 		for i in self.werewolves:
 			self.send_packet(string,i.connection)
-			
+	def sendrole(self, string, role):
+		for i in self.alive:
+			if i.role == role:
+				self.send_packet(string, i.connection)
+				
 
 	def getplayerbyname(self, name):
 		return [i for i in self.players if i.name == name][0]
@@ -280,6 +285,11 @@ class WWgame:
 			for i in self.nightroles:
 				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 				self.up = i
+				# Run the role's wake up event function
+				try:
+					i.onwakeup(self)
+				except:
+					pass
 				self.eventloop()
 			
 			# Remove all protections 
