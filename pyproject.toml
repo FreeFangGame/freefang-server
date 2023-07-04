@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name  = "freefang-server"
-version = "0.3.0"
+version = "0.3.1"
 authors = [
   { name="Solaris", email="iusegentoobtw@protonmail.com" },
   { name="lukakralik", email="luka.kralik@gmail.com"}
