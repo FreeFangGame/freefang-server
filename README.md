@@ -38,3 +38,14 @@ You are free to write your own and PR to have it added here, full protocol docum
 Full protocol documentation in PROTOCOL.md with examples and complete descriptions.   
 
 
+# Contribute
+There are many ways you can help the FreeFang project and we would be extremely thankful.
+Those include but aren't limited to:
+
+- Contributing code
+- Contributing ideas
+- Hosting a server
+- Writing a client
+- Finding and reporting bugs
+- Testing on different platforms (Windows, MacOS, *BSD)
+- Spreading the word about FreeFang
