@@ -1,4 +1,4 @@
-import select, random, json, traceback, sys, datetime, time
+import select, random, json, traceback, sys, datetime, time, copy
 try:
 	from freefang.roles import *
 	import freefang.net as fn
@@ -70,13 +70,14 @@ class WWgame:
 	def distribute_roles(self):
 	# Get all the players and keep track of those with no roles
 		print("Distributing roles to players")
+		roles = copy.deepcopy(self.roles)
 		
 		# Randomly give each role to the number of players its supposed to be on, 
 		for spl in self.players:
-			playerrole, _ = random.choice(list(self.roles.items()))
-			self.roles[playerrole] -= 1
-			if self.roles[playerrole] == 0:
-				del self.roles[playerrole]
+			playerrole, _ = random.choice(list(roles.items()))
+			roles[playerrole] -= 1
+			if roles[playerrole] == 0:
+				del roles[playerrole]
 			
 			spl.role = playerrole
 			fn.send_packet(utils.obj_to_json(packets.Role_attributed(role=playerrole.__name__)), spl.connection)
@@ -163,6 +164,8 @@ class WWgame:
 		
 		# Add player to list of dead players
 		self.dead.append(player)
+
+		self.roles[player.role] -= 1
 		
 
 	def handle_disconnections(self):
@@ -286,15 +289,17 @@ class WWgame:
 		while self.game_continues(): 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
 			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
+
 			for i in self.nightroles:
-				self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
-				self.up = i
-				# Run the role's wake up event function
-				try:
-					i.onwakeup(self)
-				except:
-					pass
-				self.eventloop()
+				if self.roles[i] > 0:
+					self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
+					self.up = i
+					# Run the role's wake up event function
+					try:
+						i.onwakeup(self)
+					except:
+						pass
+					self.eventloop()
 			
 			# Remove all protections 
 			for player in self.players:
