@@ -118,17 +118,18 @@ def game_creation_loop(args):
 					
 					# Game joining
 					elif packet.action == "game_join":
-						if not games.get(packet.headers.gameid): # If the game for the proposed gameid doesn't exist
+						gameid = packet.headers.gameid.strip()
+						if not games.get(gameid): # If the game for the proposed gameid doesn't exist
 							net.send_packet(utils.obj_to_json(packets.Action_failure(error="game_not_found")), i)
 						else:
-							game = games[packet.headers.gameid.strip()]
+							game = games[gameid]
 
 							if packet.headers.name in [s.name for s in game.players]:
 								net.send_failure(i, "name_already_taken")
 								continue
 								
 							p = models.Player()
-							p.name = packet.headers.name.strip()
+							p.name = packet.headers.name
 							p.connection = i
 							connections[i] = p
 							p.game = game
@@ -143,7 +144,7 @@ def game_creation_loop(args):
 								for i in game.players:
 									inputs.remove(i.connection)
 									outputs.remove(i.connection)
-								del games[packet.headers.gameid.strip()]
+								del games[gameid]
 								thread.start()
 					elif packet.action == "pre_game_message":
 						sender = connections[i]
