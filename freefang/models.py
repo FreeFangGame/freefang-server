@@ -51,7 +51,7 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "witch_kill": Witch.kill, "witch_revive": Witch.revive}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "witch_kill": Witch.kill, "witch_revive": Witch.revive, "witch_pass_turn": Witch.passturn}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
 

@@ -182,7 +182,7 @@ class Witch(Role):
 		game.sendrole(event, Witch)
 	
 	@staticmethod
-	def passturn(game):
+	def passturn(headers, game, connection):
 		return 2
 
 class Vote:
