@@ -91,11 +91,16 @@ class WWgame:
 				
 	def townmessage(self, headers, game, connection):
 
+		if (not headers.sender.alive){
+			return 1;
+		}
 		for i in self.players:
 			fn.send_message(headers.sender.name, headers.message, i.connection) # Send it to all players
 	
 	def werewolfmessage(self, headers, game, connection):
-
+		if (not headers.sender.alive){
+			return 1;
+		}
 		for i in self.werewolves:
 			fn.send_message(headers.sender.name, headers.message, i.connection) # Send it to all werewolves
 		
@@ -241,6 +246,7 @@ class WWgame:
 							fn.send_failure(i, error=None)
 							pass
 					except Exception as e:
+						print("===HANDLED ERROR===")
 						traceback.print_exc()
 						fn.send_failure(i, error=None)
 				except:
