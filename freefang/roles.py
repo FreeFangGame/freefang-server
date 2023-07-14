@@ -180,6 +180,10 @@ class Witch(Role):
 		dead = [i.name for i in game.nightdeaths]
 		event = utils.obj_to_json(packets.Witch_send_dead(dead))
 		game.sendrole(event, Witch)
+	
+	@staticmethod
+	def passturn(game):
+		return 2
 
 class Vote:
     def __init__(self, target, sender):
