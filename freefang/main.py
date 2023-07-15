@@ -110,7 +110,7 @@ def game_creation_loop(args):
 						for rl in game.roles: 
 							if rl.nightrole:
 								game.nightroles.append(rl)
-							
+
 						games[gameid] = game
 						net.send_packet(utils.obj_to_json(packets.Game_created(gameid=gameid)), i) # Send player a packet confirming success
 						

@@ -68,7 +68,7 @@ class Villager(Role):
 
 class Werewolf(Role):
 	nightrole = 1
-	order = 3
+	order = 4
 	def __init__(self):
 		super(Werewolf, self).__init__()
 		pass
@@ -109,7 +109,7 @@ class Werewolf(Role):
 # The seer is supposed to be able to learn about the role of one player each night
 class Seer:
 	nightrole = 1
-	order = 2
+	order = 3
 	@staticmethod
 	def reveal(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
@@ -136,7 +136,7 @@ class Hunter:
 # can prevent one person of his choosing from dying at each night	
 class Protector(Role):
 	nightrole = 1
-	order = 1
+	order = 2
 	def __init__(self):
 		super(Protector, self).__init__()
 	
@@ -152,9 +152,27 @@ class Protector(Role):
 
 # The witch can kill and revive one player per game who died during the night.
 # She is supposed to wake up last as she can only revive people who died during each night she wakes up in
+
+class Cupid(Role):
+	firstnightrole = 1
+	order = 1
+	@staticmethod
+	def infatuate(headers, game, connection){
+		target1 = game.getplayerbyname(headers.sender.target1)
+		target2 = game.getplayerbyname(headers.sender.target2)
+
+		if game.up == Cupid and headers.sender.role == Cupid:
+			target1.lover = target2
+			target2.lover = target1
+			return 2
+		else:
+			return 1
+	}
+
+
 class Witch(Role):
 	nightrole = 1
-	order = 4
+	order = 5
 	@staticmethod
 	def kill(headers, game, connection):
 		target = game.getplayerbyname(headers.target)

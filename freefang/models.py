@@ -25,7 +25,7 @@ class Player:
 		self.time = 0 # 0 = Night, 1 = Day
 		self.protected = None # name of the protected player
 		self.game = None
-
+		self.lover = None
 		#Witch stuff
 		self.haskilled = 0
 		self.hasrevived = 0
@@ -51,10 +51,10 @@ class WWgame:
 		self.msgqueues = {}
 		self.nightroles = [] # Roles that should be woken up at night, in order
 		self.up = 0 # The current role which is woken up, 0 if day.
-		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "witch_kill": Witch.kill, "witch_revive": Witch.revive, "witch_pass_turn": Witch.passturn}
+		self.action_to_function = {"werewolf_vote": Werewolf.vote, "town_vote": Villager.vote, "town_message": self.townmessage, "werewolf_message": self.werewolfmessage, "hunter_kill": Hunter.kill, "seer_reveal":Seer.reveal, "protector_protect": Protector.protect, "witch_kill": Witch.kill, "witch_revive": Witch.revive, "witch_pass_turn": Witch.passturn, "cupid_infatuate": Cupid.infatuate}
 		self.votes = []
 		self.connections = {} # Dictionnary associating connections to players
-
+		self.firstnight = True
 		self.roles = {} # The number of players for each role should be decided by the client upon game creation and should be implemented alongside the protocol
 		
 		self.town_voting_scheme = "absmaj"
@@ -166,7 +166,8 @@ class WWgame:
 		if player.role == Hunter:
 			self.up = Hunter
 			self.eventloop()
-		
+		if player.lover:
+			self.kill_player(player.lover)
 		# Add player to list of dead players
 		self.dead.append(player)
 
@@ -295,9 +296,12 @@ class WWgame:
 		while self.game_continues(): 
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
 			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
-
 			for i in self.nightroles:
 				if self.roles[i] > 0:
+					# If the role is a first night role and its not the first night, we skip it.
+					if self.roles[i].firstnightrole and not self.firstnight:
+						continue
+
 					self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
 					self.up = i
 					# Run the role's wake up event function
@@ -306,7 +310,7 @@ class WWgame:
 					except:
 						pass
 					self.eventloop()
-			
+			self.firstnight = False
 			# Remove all protections 
 			for player in self.players:
 				player.protected = None
