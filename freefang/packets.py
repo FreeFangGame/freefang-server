@@ -104,22 +104,22 @@ class Game_end:
 		}
 
 class ChatMessage:
-    def __init__(self, sender, message, timestamp):
-        self.action = "chat_message"
-        self.headers = {
-            "sender": sender,
-            "message": message,
-            "timestamp": timestamp
-        }
+	def __init__(self, sender, message, timestamp):
+		self.action = "chat_message"
+		self.headers = {
+			"sender": sender,
+			"message": message,
+			"timestamp": timestamp
+		}
 
 class SeerReveal:
-    def __init__(self, role, name):
-        self.action = "seer_role_reveal"
-        self.headers = {
+	def __init__(self, role, name):
+		self.action = "seer_role_reveal"
+		self.headers = {
 			"role": role,
 			"name": name
-        }
-        
+		}
+		
 class Town_Vote_Begin:
 	def __init__(self):
 		self.action = "town_vote_begin"
@@ -133,5 +133,14 @@ class Check_alive:
 class Witch_send_dead:
 	def __init__(self, players):
 		self.action = "witch_send_dead"
-		self.dead = players
+		self.headers = {
+			"dead": players
+		}
 	
+# Sent to players who are coupled with eachother by the Cupid role
+class Player_coupled:
+	def __init__(self, player):
+		self.action = "player_coupled"
+		self.headers = {
+			"lover": player
+		}

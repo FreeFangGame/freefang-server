@@ -167,7 +167,10 @@ class WWgame:
 			self.up = Hunter
 			self.eventloop()
 		if player.lover:
+			player.lover.lover = None
 			self.kill_player(player.lover)
+			player.lover = None
+
 		# Add player to list of dead players
 		self.dead.append(player)
 
@@ -297,9 +300,11 @@ class WWgame:
 			# Game should go on as long as there are villagers and werewolves, keeping the day night cycle
 			self.sendall(utils.obj_to_json(packets.Time_change(time="night"))) # Notify everyone night has fallen
 			for i in self.nightroles:
-				if self.roles[i] > 0:
+				# This is to make sure a player who was killed during the night does not wake up
+				playerwithrole = [x for x in self.players if x.role == i][0]
+				if self.roles[i] > 0 and not playerwithrole in self.nightdeaths:
 					# If the role is a first night role and its not the first night, we skip it.
-					if self.roles[i].firstnightrole and not self.firstnight:
+					if i.firstnightrole and not self.firstnight:
 						continue
 
 					self.queueall(utils.obj_to_json(packets.Role_wakeup(role=i.__name__))) # Notify everyone role has woken up
@@ -308,6 +313,7 @@ class WWgame:
 					try:
 						i.onwakeup(self)
 					except:
+						traceback.print_exc()
 						pass
 					self.eventloop()
 			self.firstnight = False

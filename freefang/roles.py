@@ -69,6 +69,7 @@ class Villager(Role):
 class Werewolf(Role):
 	nightrole = 1
 	order = 4
+	firstnightrole = 0
 	def __init__(self):
 		super(Werewolf, self).__init__()
 		pass
@@ -110,6 +111,8 @@ class Werewolf(Role):
 class Seer:
 	nightrole = 1
 	order = 3
+	firstnightrole = 0
+
 	@staticmethod
 	def reveal(headers, game, connection):
 		target = game.getplayerbyname(headers.target)
@@ -135,6 +138,8 @@ class Hunter:
 
 # can prevent one person of his choosing from dying at each night	
 class Protector(Role):
+	firstnightrole = 0
+
 	nightrole = 1
 	order = 2
 	def __init__(self):
@@ -155,22 +160,28 @@ class Protector(Role):
 
 class Cupid(Role):
 	firstnightrole = 1
+	nightrole = 1
 	order = 1
 	@staticmethod
-	def infatuate(headers, game, connection){
-		target1 = game.getplayerbyname(headers.sender.target1)
-		target2 = game.getplayerbyname(headers.sender.target2)
+	def infatuate(headers, game, connection):
+		target1 = game.getplayerbyname(headers.target1)
+		target2 = game.getplayerbyname(headers.target2)
 
 		if game.up == Cupid and headers.sender.role == Cupid:
 			target1.lover = target2
 			target2.lover = target1
+
+			game.send_packet(utils.obj_to_json(packets.Player_coupled(target1.name)), target2.connection)
+			game.send_packet(utils.obj_to_json(packets.Player_coupled(target2.name)), target1.connection)
+			
 			return 2
 		else:
 			return 1
-	}
+	
 
 
 class Witch(Role):
+	firstnightrole = 0
 	nightrole = 1
 	order = 5
 	@staticmethod
