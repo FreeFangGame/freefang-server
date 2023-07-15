@@ -157,7 +157,7 @@ class WWgame:
 		# Remove player from various lists reserved to living players
 		if player in self.werewolves:
 			self.werewolves.remove(player)
-		else:
+		else if player in self.villagers:
 			self.villagers.remove(player)
 			
 		self.alive.remove(player)
