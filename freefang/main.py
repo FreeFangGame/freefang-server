@@ -121,6 +121,8 @@ def game_creation_loop(args):
 						gameid = packet.headers.gameid.strip()
 						if not games.get(gameid): # If the game for the proposed gameid doesn't exist
 							net.send_packet(utils.obj_to_json(packets.Action_failure(error="game_not_found")), i)
+						elif len(packet.headers.name) > 20:
+							net.send_packet(utils.obj_to_json(packets.Action_failure(error="name_too_long")), i)
 						else:
 							game = games[gameid]
 
