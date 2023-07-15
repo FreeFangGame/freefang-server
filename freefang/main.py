@@ -136,7 +136,7 @@ def game_creation_loop(args):
 							for spl in game.players:
 								net.send_packet(utils.obj_to_json(packets.Player_join(username=p.name)), spl.connection)
 							game.players.append(p)
-							net.send_packet(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name, players=[i.name for i in game.players])), i) # Send player a packet confirming success
+							net.send_packet(utils.obj_to_json(packets.Added_to_game(username=packet.headers.name, players=[i.name for i in game.players], gameid=gameid)), i) # Send player a packet confirming success
 
 							if len(game.players) == game.playercap:
 
