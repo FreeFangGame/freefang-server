@@ -60,6 +60,13 @@ class WWgame:
 		self.town_voting_scheme = "absmaj"
 		self.werewolf_voting_scheme = "relmaj"
 	
+
+	# Add a player to the list of night deaths
+	def add_to_night_deaths(self, player):
+		if player not in self.nightdeaths:
+			self.nightdeaths.append(player)
+
+
 	# This function is a shortcut to send a packet and remove the player if the connection is dead
 	def send_packet(self, packet, con):
 		try:
@@ -138,13 +145,15 @@ class WWgame:
 		# If the player is protected we do nothing. 
 		if player.protected:
 			return 1
+		if not player.alive:
+			return 1
 		print(player.name + " died")
 
 		
 		# If the player died during the night we keep it in a list to notify the other players when the day rises
 		# Otherwise we just send the packet right away
 		if self.up != 0 and self.up != Hunter:
-			self.nightdeaths.append(player)
+			self.add_to_night_deaths(player)
 			return 0
 		player.alive = False
 
@@ -157,10 +166,11 @@ class WWgame:
 		# Remove player from various lists reserved to living players
 		if player in self.werewolves:
 			self.werewolves.remove(player)
-		else if player in self.villagers:
+		elif player in self.villagers:
 			self.villagers.remove(player)
 			
-		self.alive.remove(player)
+		if player in self.alive:
+			self.alive.remove(player)
 		
 		# If the dead player is a hunter we need to wait for him to make his kill
 		if player.role == Hunter:
@@ -328,6 +338,7 @@ class WWgame:
 			
 			
 			# Notify all players of deaths that happened during the night. 
+			print([s.name for s in self.nightdeaths])
 			for death in self.nightdeaths:
 				self.kill_player(death)
 			self.nightdeaths = []
